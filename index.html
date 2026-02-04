@@ -125,11 +125,12 @@
       pointer-events:none;
     }
 
+    /* bounce + fly away */
     @keyframes noBounce{
-      0%   { transform: translate(20%, -50%) rotate(0deg); }
-      40%  { transform: translate(55%, -62%) rotate(10deg); }
-      75%  { transform: translate(45%, -50%) rotate(5deg); }
-      100% { transform: translate(110%, -65%) rotate(14deg); }
+      0%   { transform: translate(20%, -50%) rotate(0deg) scale(1); }
+      35%  { transform: translate(56%, -66%) rotate(10deg) scale(1.05); }
+      70%  { transform: translate(46%, -52%) rotate(5deg) scale(.98); }
+      100% { transform: translate(118%, -70%) rotate(14deg) scale(.95); }
     }
 
     .sub{ margin-top:12px; font-size:12px; opacity:.75; }
@@ -182,9 +183,7 @@
     canvas#confetti{ position:fixed; inset:0; pointer-events:none; }
 
     /* ===========================
-       SMALL SVG CHIBI (FACE FIXED)
-       Using SVG prevents iOS layer-splitting,
-       so face ALWAYS moves with character.
+       Small SVG Chibi
        =========================== */
 
     .actorStage{
@@ -196,8 +195,8 @@
       pointer-events:none;
       z-index:6;
 
-      /* SMALL character */
-      transform: scale(.75);
+      /* smaller */
+      transform: scale(.70);
       transform-origin: left bottom;
 
       filter: drop-shadow(0 16px 18px rgba(0,0,0,.12));
@@ -209,13 +208,12 @@
       to{ left:-18px; }
     }
 
-    /* We animate the whole SVG group so face follows perfectly */
+    /* Animate the whole character group (face ALWAYS follows) */
     #chibiG{
       transform-origin: 80px 135px;
       will-change: transform;
     }
 
-    /* run bob */
     .run #chibiG{ animation: runBob .18s ease-in-out infinite; }
     @keyframes runBob{
       0%{ transform: translateY(0) rotate(0deg); }
@@ -223,40 +221,52 @@
       100%{ transform: translateY(0) rotate(0deg); }
     }
 
-    /* kick body lean */
     .kick #chibiG{ animation: kickLean .52s cubic-bezier(.2,.95,.2,1) forwards; }
     @keyframes kickLean{
       0%{ transform: translateX(0) rotate(0deg); }
-      30%{ transform: translateX(10px) rotate(-5deg); }
-      70%{ transform: translateX(26px) rotate(7deg); }
+      28%{ transform: translateX(10px) rotate(-5deg); }
+      70%{ transform: translateX(26px) rotate(6deg); }
       100%{ transform: translateX(18px) rotate(0deg); }
     }
 
-    /* realistic right-leg kick (thigh + shin) */
+    /* 🔥 FIX LEG WEIRDNESS: set transform-box + origins */
+    #thighR, #shinR, #legBack{
+      transform-box: fill-box;
+      transform-origin: 10px 7px;
+    }
+    #shinR{
+      transform-origin: 6px 6px;
+    }
+
+    /* smoother kick angles */
     .kick #thighR{ animation: thighKick .52s cubic-bezier(.2,.95,.2,1) forwards; }
     .kick #shinR  { animation: shinKick  .52s cubic-bezier(.2,.95,.2,1) forwards; }
+    .kick #legBack{ animation: backLegBrace .52s cubic-bezier(.2,.95,.2,1) forwards; }
 
     @keyframes thighKick{
-      0%   { transform: rotate(-8deg); }
-      40%  { transform: rotate(-22deg); }
-      70%  { transform: rotate(-58deg); } /* forward */
-      100% { transform: rotate(-18deg); }
+      0%   { transform: rotate(-6deg); }
+      40%  { transform: rotate(-18deg); }
+      72%  { transform: rotate(-46deg); } /* touches button */
+      100% { transform: rotate(-14deg); }
     }
     @keyframes shinKick{
-      0%   { transform: rotate(18deg); } /* bent */
-      45%  { transform: rotate(10deg); }
-      70%  { transform: rotate(-26deg); } /* extends */
-      100% { transform: rotate(8deg); }
+      0%   { transform: rotate(16deg); }   /* bent */
+      45%  { transform: rotate(8deg); }
+      72%  { transform: rotate(-18deg); }  /* extension */
+      100% { transform: rotate(8deg); }    /* recoil */
+    }
+    @keyframes backLegBrace{
+      0%{ transform: rotate(12deg); }
+      60%{ transform: rotate(18deg); }
+      100%{ transform: rotate(14deg); }
     }
 
-    /* look at camera */
     .look #chibiG{ animation: lookCam .28s ease-in-out forwards; }
     @keyframes lookCam{
       from{ transform: translateX(18px) rotate(0deg); }
       to{ transform: translateX(16px) rotate(-8deg); }
     }
 
-    /* Heart FX */
     #fxGroup{
       opacity:0;
       transform-origin: 170px 40px;
@@ -270,7 +280,6 @@
       100%{ opacity:1; transform: scale(1) translateY(0); }
     }
 
-    /* fade out */
     .fadeOut{
       transition: opacity .45s ease;
       opacity:0;
@@ -303,21 +312,20 @@
             </g>
           </g>
 
-          <!-- Character group (FACE IS INSIDE THIS GROUP => ALWAYS MOVES) -->
+          <!-- Character group -->
           <g id="chibiG">
-            <!-- shadow/feet base -->
             <ellipse cx="92" cy="150" rx="38" ry="10" fill="rgba(0,0,0,.12)"/>
 
-            <!-- back leg -->
-            <g transform="translate(78 122) rotate(12)">
+            <!-- back leg with id so we can brace it -->
+            <g id="legBack" transform="translate(78 122) rotate(12)">
               <rect x="0" y="0" width="44" height="14" rx="8" fill="#1a1a1a"/>
               <rect x="36" y="-6" width="22" height="24" rx="10" fill="#1a1a1a"/>
             </g>
 
-            <!-- right leg (kicking) thigh + shin -->
-            <g id="thighR" transform="translate(86 130) rotate(-8)">
+            <!-- right leg (kicking) -->
+            <g id="thighR" transform="translate(86 130) rotate(-6)">
               <rect x="0" y="0" width="42" height="14" rx="8" fill="#1a1a1a"/>
-              <g id="shinR" transform="translate(30 -2) rotate(18)">
+              <g id="shinR" transform="translate(30 -2) rotate(16)">
                 <rect x="0" y="0" width="34" height="12" rx="8" fill="#1a1a1a"/>
                 <rect x="24" y="-7" width="22" height="24" rx="10" fill="#1a1a1a"/>
               </g>
@@ -341,20 +349,21 @@
               <circle cx="48" cy="8" r="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4"/>
             </g>
 
-            <!-- head + face (THIS is what was "stuck" before; now it's inside SVG group) -->
             <!-- ears -->
             <g>
               <rect x="78" y="36" width="16" height="22" rx="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4" transform="rotate(-8 86 47)"/>
               <rect x="152" y="36" width="16" height="22" rx="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4" transform="rotate(8 160 47)"/>
             </g>
 
-            <!-- hair -->
-            <path d="M92 20 C108 6 140 6 156 20 C164 28 166 44 160 52 C150 40 98 40 88 52 C82 44 84 28 92 20Z"
+            <!-- ✅ Bandana/hair cap HIGHER (moved up) -->
+            <path d="M92 14 C108 2 140 2 156 14 C164 22 166 38 160 46 C150 34 98 34 88 46 C82 38 84 22 92 14Z"
                   fill="#2b1d1a" stroke="#1a1a1a" stroke-width="4"/>
+
             <!-- head -->
             <circle cx="120" cy="48" r="44" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4"/>
-            <!-- fringe -->
-            <path d="M86 40 C102 54 138 54 154 40" fill="none" stroke="#2b1d1a" stroke-width="10" stroke-linecap="round"/>
+
+            <!-- fringe slightly higher too -->
+            <path d="M86 36 C102 50 138 50 154 36" fill="none" stroke="#2b1d1a" stroke-width="10" stroke-linecap="round"/>
 
             <!-- eyes -->
             <rect x="104" y="46" width="12" height="18" rx="8" fill="#1a1a1a"/>
@@ -426,9 +435,7 @@
     const noBtn = document.getElementById("noBtn");
     const toast = document.getElementById("toast");
     const backBtn = document.getElementById("backBtn");
-
     const actorStage = document.getElementById("actorStage");
-    const fxGroup = document.getElementById("fxGroup");
 
     document.getElementById("nameSpan").textContent = herName;
     document.getElementById("nameSpan2").textContent = herName;
@@ -462,47 +469,35 @@
     yesBtn.addEventListener("click", goYes);
     backBtn.addEventListener("click", goQuestion);
 
-    // Helper to add/remove classes cleanly
-    function setActor(state){
-      actorStage.classList.remove("run","kick","look","showFx","fadeOut");
-      if(state) actorStage.classList.add(state);
-    }
-
-    // Opening animation sequence:
-    // 1) run in from left
-    // 2) kick: leg swings and CONTACT -> triggers NO bounce
-    // 3) NO disappears
-    // 4) look + heart
-    // 5) fade out
+    // Opening animation
     window.addEventListener("load", () => {
       actorStage.classList.add("runIn");
       actorStage.classList.add("run");
 
-      // Kick starts
       setTimeout(() => {
         actorStage.classList.remove("run");
         actorStage.classList.add("kick");
 
-        // CONTACT MOMENT: align with peak extension (around 70% of 520ms ≈ 360ms)
+        // Contact moment (timed to peak extension)
         setTimeout(() => {
           noBtn.classList.add("kickHit");
         }, 360);
 
-        // After bounce, hide it
+        // after bounce, disappear
         setTimeout(() => {
           noBtn.classList.add("kickGone");
         }, 720);
 
       }, 950);
 
-      // Look + FX
+      // look + heart
       setTimeout(() => {
         actorStage.classList.remove("kick");
         actorStage.classList.add("look");
         actorStage.classList.add("showFx");
       }, 1650);
 
-      // Fade out
+      // fade out
       setTimeout(() => {
         actorStage.classList.add("fadeOut");
       }, 2700);
