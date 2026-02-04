@@ -27,11 +27,7 @@
       color:var(--text);
     }
 
-    .wrap{
-      width:min(520px, 92vw);
-      padding:24px 18px;
-      position:relative;
-    }
+    .wrap{ width:min(520px, 92vw); padding:24px 18px; position:relative; }
 
     .card{
       background:var(--card);
@@ -42,75 +38,42 @@
       text-align:center;
       border:1px solid rgba(255,255,255,.6);
       position:relative;
+      overflow:hidden; /* so kick animation stays clean */
     }
 
     .kitty{
-      width:82px;
-      height:82px;
-      margin:0 auto 10px;
-      border-radius:50%;
-      background: #ffcfb8;
-      position:relative;
+      width:82px; height:82px; margin:0 auto 10px; border-radius:50%;
+      background: #ffcfb8; position:relative;
       box-shadow: 0 10px 22px rgba(0,0,0,.08) inset;
     }
     .kitty:before, .kitty:after{
-      content:"";
-      position:absolute;
-      top:-10px;
-      width:22px; height:22px;
-      background:#ffcfb8;
-      border-radius:6px 18px 6px 18px;
+      content:""; position:absolute; top:-10px; width:22px; height:22px;
+      background:#ffcfb8; border-radius:6px 18px 6px 18px;
       transform: rotate(10deg);
     }
     .kitty:before{ left:10px; }
     .kitty:after{ right:10px; transform: rotate(-10deg); }
-    .eye{
-      position:absolute;
-      top:34px;
-      width:8px; height:8px;
-      background:#111;
-      border-radius:50%;
-    }
-    .eye.left{ left:26px; }
-    .eye.right{ right:26px; }
+    .eye{ position:absolute; top:34px; width:8px; height:8px; background:#111; border-radius:50%; }
+    .eye.left{ left:26px; } .eye.right{ right:26px; }
     .nose{
-      position:absolute;
-      top:46px; left:50%;
-      transform:translateX(-50%);
-      width:10px; height:10px;
-      background:#ff6fa0;
-      border-radius:50% 50% 60% 60%;
+      position:absolute; top:46px; left:50%; transform:translateX(-50%);
+      width:10px; height:10px; background:#ff6fa0; border-radius:50% 50% 60% 60%;
     }
     .heart{
-      position:absolute;
-      top:-8px; right:-4px;
-      width:18px; height:18px;
-      background:var(--accent);
-      transform: rotate(45deg);
-      border-radius:4px;
+      position:absolute; top:-8px; right:-4px; width:18px; height:18px;
+      background:var(--accent); transform: rotate(45deg); border-radius:4px;
       box-shadow: 0 10px 18px rgba(255,77,136,.35);
     }
     .heart:before,.heart:after{
-      content:"";
-      position:absolute;
-      width:18px; height:18px;
-      background:var(--accent);
-      border-radius:50%;
+      content:""; position:absolute; width:18px; height:18px; background:var(--accent); border-radius:50%;
     }
-    .heart:before{ left:-9px; top:0; }
-    .heart:after{ left:0; top:-9px; }
+    .heart:before{ left:-9px; top:0; } .heart:after{ left:0; top:-9px; }
 
-    h1{
-      font-size:28px;
-      line-height:1.15;
-      margin:10px 0 16px;
-      letter-spacing:-0.5px;
-    }
+    h1{ font-size:28px; line-height:1.15; margin:10px 0 16px; letter-spacing:-0.5px; }
 
-    /* Make the button arena a bit wider/taller so "No" has room to run */
     .btnRow{
       position:relative;
-      height:68px;
+      height:74px;
       margin-top:12px;
     }
 
@@ -120,11 +83,9 @@
       border-radius:999px;
       font-size:16px;
       cursor:pointer;
-      transition: transform .12s ease, filter .12s ease;
       user-select:none;
       -webkit-tap-highlight-color: transparent;
     }
-    button:active{ transform: scale(.97); }
 
     #yesBtn{
       background:var(--accent);
@@ -134,44 +95,38 @@
       min-width:92px;
       position:absolute;
       left:50%;
-      transform:translateX(-120%);
       top:50%;
-      margin-top:-18px;
+      transform: translate(-120%, -50%);
+      z-index:2;
     }
 
-    /* SMALL, FIXED-SIZE NO BUTTON */
+    /* NO stays normal here, but will be kicked away on load */
     #noBtn{
       background:#eaeaea;
       color:#111;
-      width:64px;          /* fixed width (won't "get bigger") */
-      height:34px;         /* fixed height */
-      padding:0;           /* no padding so size stays fixed */
-      font-size:14px;
-      font-weight:600;
+      min-width:92px;
       position:absolute;
-      top:50%;
-      margin-top:-17px;
       left:50%;
-      transform:translateX(20%); /* initial start position */
+      top:50%;
+      transform: translate(20%, -50%);
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
-      transition: left .08s linear; /* quick horizontal movement */
+      z-index:2;
+      transition: transform .55s cubic-bezier(.2,.9,.2,1), opacity .25s ease;
     }
 
-    .sub{
-      margin-top:12px;
-      font-size:12px;
-      opacity:.75;
+    /* Kick effect: button flies right */
+    #noBtn.kicked{
+      transform: translate(240%, -60%) rotate(16deg);
+      opacity:0;
+      pointer-events:none;
     }
 
-    /* screens */
+    .sub{ margin-top:12px; font-size:12px; opacity:.75; }
+
     .screen{ display:none; }
     .screen.active{ display:block; }
 
-    .yay{
-      font-size:32px;
-      margin:10px 0 12px;
-      font-weight:900;
-    }
+    .yay{ font-size:32px; margin:10px 0 12px; font-weight:900; }
 
     .pic{
       width:min(280px, 70vw);
@@ -183,12 +138,7 @@
       border: 6px solid rgba(255,255,255,.7);
       background:#fff;
     }
-    .pic img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
+    .pic img{ width:100%; height:100%; object-fit:cover; display:block; }
 
     .smallBtn{
       margin-top:14px;
@@ -212,16 +162,82 @@
       pointer-events:none;
       transition: opacity .2s ease, transform .2s ease;
       box-shadow: 0 18px 40px rgba(0,0,0,.25);
+      z-index:999;
     }
     .toast.show{
       opacity:1;
       transform: translateX(-50%) translateY(-6px);
     }
 
-    canvas#confetti{
-      position:fixed;
-      inset:0;
+    canvas#confetti{ position:fixed; inset:0; pointer-events:none; }
+
+    /* ===== Character Animation (simple emoji dude) ===== */
+    .actorWrap{
+      position:absolute;
+      left:-140px;
+      bottom:10px;
+      width:140px;
+      height:120px;
       pointer-events:none;
+      z-index:3;
+    }
+
+    .actor{
+      position:absolute;
+      left:0;
+      bottom:0;
+      width:120px;
+      height:120px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      font-size:64px;
+      transform: translateX(0);
+    }
+
+    /* Heart that pops after kick */
+    .actorHeart{
+      position:absolute;
+      left:70px;
+      bottom:78px;
+      font-size:28px;
+      opacity:0;
+      transform: scale(.6);
+      transition: opacity .25s ease, transform .25s ease;
+      filter: drop-shadow(0 10px 18px rgba(255,77,136,.35));
+    }
+    .actorHeart.show{
+      opacity:1;
+      transform: scale(1);
+    }
+
+    /* Slide in */
+    .actorWrap.runIn{
+      animation: runIn .75s cubic-bezier(.2,.9,.2,1) forwards;
+    }
+    @keyframes runIn{
+      from{ left:-140px; }
+      to{ left:10px; }
+    }
+
+    /* Kick motion (little bounce) */
+    .actor.kick{
+      animation: kick .45s ease-in-out forwards;
+    }
+    @keyframes kick{
+      0%{ transform: translateX(0) rotate(0); }
+      40%{ transform: translateX(18px) rotate(-6deg); }
+      70%{ transform: translateX(28px) rotate(6deg); }
+      100%{ transform: translateX(18px) rotate(0); }
+    }
+
+    /* Look at viewer */
+    .actor.look{
+      animation: look .35s ease-in-out forwards;
+    }
+    @keyframes look{
+      0%{ transform: translateX(18px) rotate(0); }
+      100%{ transform: translateX(18px) rotate(-4deg); }
     }
   </style>
 </head>
@@ -230,6 +246,12 @@
 
   <div class="wrap">
     <div class="card">
+
+      <!-- Character overlay inside card -->
+      <div class="actorWrap" id="actorWrap">
+        <div class="actor" id="actor">🦵</div>
+        <div class="actorHeart" id="actorHeart">💖</div>
+      </div>
 
       <!-- QUESTION SCREEN -->
       <div id="qScreen" class="screen active">
@@ -274,10 +296,10 @@
   <div id="toast" class="toast">Sorry, wrong answer. Try again. 😡</div>
 
   <script>
-    // ====== CUSTOMIZE THESE 2 LINES ======
+    // ====== CUSTOMIZE ======
     const herName = "Farida";
-    const yesImage = "yay.jpg"; // upload this file to your repo OR use an image URL
-    // =====================================
+    const yesImage = "yay.jpg"; // upload to repo OR use URL
+    // =======================
 
     const qScreen = document.getElementById("qScreen");
     const yesScreen = document.getElementById("yesScreen");
@@ -286,6 +308,10 @@
     const btnArea = document.getElementById("btnArea");
     const toast = document.getElementById("toast");
     const backBtn = document.getElementById("backBtn");
+
+    const actorWrap = document.getElementById("actorWrap");
+    const actor = document.getElementById("actor");
+    const actorHeart = document.getElementById("actorHeart");
 
     document.getElementById("nameSpan").textContent = herName;
     document.getElementById("nameSpan2").textContent = herName;
@@ -302,7 +328,6 @@
       yesScreen.classList.remove("active");
       qScreen.classList.add("active");
       stopConfetti();
-      resetNoBtn();
     }
     function goYes(){
       qScreen.classList.remove("active");
@@ -310,92 +335,45 @@
       startConfetti();
     }
 
-    // ========= HARD-TO-CLICK HORIZONTAL RUNNER =========
-    let lastMove = 0;
-    let noX = 0; // left position in px inside btnArea
-
-    function resetNoBtn(){
-      const area = btnArea.getBoundingClientRect();
-      const btn = noBtn.getBoundingClientRect();
-      noX = Math.max(8, Math.min(area.width - btn.width - 8, Math.round(area.width * 0.62)));
-      noBtn.style.left = noX + "px";
-    }
-
-    // Move only horizontally; direction depends on where cursor/finger is
-    function moveNoAwayFrom(clientX){
-      const now = performance.now();
-      if (now - lastMove < 60) return; // throttle so it doesn't jitter too fast
-      lastMove = now;
-
-      const area = btnArea.getBoundingClientRect();
-      const btn = noBtn.getBoundingClientRect();
-
-      const btnCenterX = btn.left + btn.width/2;
-      const areaLeft = area.left;
-
-      // if pointer is on left of the button, run right; else run left
-      const dir = clientX < btnCenterX ? 1 : -1;
-
-      // how far it jumps (bigger = harder)
-      const jump = 90 + Math.random()*70; // 90–160px
-
-      let nextX = noX + dir * jump;
-
-      const minX = 8;
-      const maxX = area.width - btn.width - 8;
-
-      // bounce off edges
-      if (nextX < minX) nextX = maxX;
-      if (nextX > maxX) nextX = minX;
-
-      noX = nextX;
-      noBtn.style.left = noX + "px";
-    }
-
-    // Desktop: if cursor comes near, it runs (hard to click)
-    btnArea.addEventListener("mousemove", (e) => {
-      const btn = noBtn.getBoundingClientRect();
-      const dx = Math.abs(e.clientX - (btn.left + btn.width/2));
-      const dy = Math.abs(e.clientY - (btn.top + btn.height/2));
-
-      // "danger zone" around the No button
-      if (dx < 90 && dy < 45) {
-        moveNoAwayFrom(e.clientX);
-      }
-    });
-
-    // Mobile: if user touches anywhere near it, it runs BEFORE click lands
-    btnArea.addEventListener("touchstart", (e) => {
-      const t = e.touches[0];
-      const btn = noBtn.getBoundingClientRect();
-      const dx = Math.abs(t.clientX - (btn.left + btn.width/2));
-      const dy = Math.abs(t.clientY - (btn.top + btn.height/2));
-
-      if (dx < 110 && dy < 70) {
-        moveNoAwayFrom(t.clientX);
-        // prevent accidental click landing
-        e.preventDefault();
-      }
-    }, {passive:false});
-
-    // If she somehow clicks No anyway:
+    // If user clicks NO (before kick or if it’s still there somehow)
     noBtn.addEventListener("click", (e) => {
       e.preventDefault();
       showToast("Sorry, wrong answer. Try again. 😡");
-      // send it running again for fun
-      const btn = noBtn.getBoundingClientRect();
-      moveNoAwayFrom(btn.left + btn.width/2);
-      setTimeout(goQuestion, 900);
+      setTimeout(() => {
+        // return to question screen (already there, but keeps the behavior consistent)
+        goQuestion();
+      }, 900);
     });
 
-    // YES button
+    // YES
     yesBtn.addEventListener("click", goYes);
     backBtn.addEventListener("click", goQuestion);
 
-    // Place No button initially
-    window.addEventListener("load", resetNoBtn);
-    window.addEventListener("resize", resetNoBtn);
-    resetNoBtn();
+    // ===== Opening animation: actor kicks the No button, then shows heart =====
+    window.addEventListener("load", () => {
+      // slide actor in
+      actorWrap.classList.add("runIn");
+
+      // after actor arrives, do kick
+      setTimeout(() => {
+        actor.classList.add("kick");
+        // kick the No button out
+        noBtn.classList.add("kicked");
+      }, 750);
+
+      // look at viewer + show heart
+      setTimeout(() => {
+        actor.classList.remove("kick");
+        actor.classList.add("look");
+        actorHeart.classList.add("show");
+      }, 1200);
+
+      // OPTIONAL: fade actor away after a bit (comment out if you want it to stay)
+      setTimeout(() => {
+        actorWrap.style.opacity = "0";
+        actorWrap.style.transition = "opacity .35s ease";
+      }, 2200);
+    });
 
     // ================== CONFETTI (simple canvas) ==================
     const canvas = document.getElementById("confetti");
@@ -434,7 +412,7 @@
         if(p.x < -30) p.x = W+30;
         if(p.x > W+30) p.x = -30;
 
-        const hue = ( (p.x/W)*120 + 330 ) % 360;
+        const hue = ((p.x/W)*120 + 330) % 360;
         ctx.fillStyle = `hsl(${hue} 90% 75%)`;
         ctx.beginPath();
         ctx.ellipse(p.x, p.y, p.r, p.r*1.4, p.a, 0, Math.PI*2);
