@@ -12,16 +12,9 @@
       --text:#111;
       --accent:#ff4d88;
       --shadow: 0 20px 50px rgba(0,0,0,.12);
-
-      --ink:#1a1a1a;
-      --skin:#ffd9c2;
-      --hair:#2b1d1a;
-      --hoodie:#ff6fa0;
-      --hoodie2:#ff4d88;
-      --shoe:#1a1a1a;
     }
 
-    *{ box-sizing:border-box; }
+    *{box-sizing:border-box}
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -34,12 +27,7 @@
       color:var(--text);
     }
 
-    .wrap{
-      width:min(540px, 92vw);
-      padding:24px 18px;
-      position:relative;
-    }
-
+    .wrap{ width:min(540px, 92vw); padding:24px 18px; position:relative; }
     .card{
       background:var(--card);
       backdrop-filter: blur(6px);
@@ -52,34 +40,31 @@
       overflow:hidden;
     }
 
-    /* top cute badge */
+    /* header mascot */
     .kitty{
-      width:82px; height:82px; margin:0 auto 10px; border-radius:50%;
-      background: #ffcfb8; position:relative;
+      width:82px;height:82px;margin:0 auto 10px;border-radius:50%;
+      background:#ffcfb8;position:relative;
       box-shadow: 0 10px 22px rgba(0,0,0,.08) inset;
     }
-    .kitty:before, .kitty:after{
-      content:""; position:absolute; top:-10px; width:22px; height:22px;
-      background:#ffcfb8; border-radius:6px 18px 6px 18px;
-      transform: rotate(10deg);
+    .kitty:before,.kitty:after{
+      content:"";position:absolute;top:-10px;width:22px;height:22px;background:#ffcfb8;
+      border-radius:6px 18px 6px 18px;transform:rotate(10deg);
     }
-    .kitty:before{ left:10px; }
-    .kitty:after{ right:10px; transform: rotate(-10deg); }
-    .eye{ position:absolute; top:34px; width:8px; height:8px; background:#111; border-radius:50%; }
-    .eye.left{ left:26px; } .eye.right{ right:26px; }
-    .nose{
-      position:absolute; top:46px; left:50%; transform:translateX(-50%);
-      width:10px; height:10px; background:#ff6fa0; border-radius:50% 50% 60% 60%;
-    }
+    .kitty:before{left:10px}
+    .kitty:after{right:10px;transform:rotate(-10deg)}
+    .eye{position:absolute;top:34px;width:8px;height:8px;background:#111;border-radius:50%}
+    .eye.left{left:26px}
+    .eye.right{right:26px}
+    .nose{position:absolute;top:46px;left:50%;transform:translateX(-50%);width:10px;height:10px;background:#ff6fa0;border-radius:50%}
     .heartBadge{
-      position:absolute; top:-8px; right:-4px; width:18px; height:18px;
-      background:var(--accent); transform: rotate(45deg); border-radius:4px;
-      box-shadow: 0 10px 18px rgba(255,77,136,.35);
+      position:absolute;top:-8px;right:-4px;width:18px;height:18px;background:var(--accent);
+      transform:rotate(45deg);border-radius:4px;box-shadow:0 10px 18px rgba(255,77,136,.35);
     }
     .heartBadge:before,.heartBadge:after{
-      content:""; position:absolute; width:18px; height:18px; background:var(--accent); border-radius:50%;
+      content:"";position:absolute;width:18px;height:18px;background:var(--accent);border-radius:50%;
     }
-    .heartBadge:before{ left:-9px; top:0; } .heartBadge:after{ left:0; top:-9px; }
+    .heartBadge:before{left:-9px;top:0}
+    .heartBadge:after{left:0;top:-9px}
 
     h1{
       font-size:28px;
@@ -88,10 +73,9 @@
       letter-spacing:-0.5px;
     }
 
-    /* button arena */
     .btnRow{
       position:relative;
-      height:92px;
+      height:96px;
       margin-top:12px;
     }
 
@@ -103,7 +87,6 @@
       cursor:pointer;
       user-select:none;
       -webkit-tap-highlight-color: transparent;
-      transition: filter .12s ease;
     }
 
     #yesBtn{
@@ -130,32 +113,31 @@
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
       z-index:5;
       will-change: transform, opacity;
-      transition: transform .65s cubic-bezier(.2,.95,.15,1), opacity .25s ease;
+      transition: opacity .25s ease;
     }
 
-    /* kicked away */
-    #noBtn.kicked{
-      transform: translate(460%, -105%) rotate(22deg);
+    /* Kick sequence states for NO button */
+    #noBtn.kickHit{
+      animation: noBounce .38s cubic-bezier(.2,.95,.2,1) forwards;
+    }
+    #noBtn.kickGone{
       opacity:0;
       pointer-events:none;
-      filter: blur(.35px);
     }
 
-    .sub{
-      margin-top:12px;
-      font-size:12px;
-      opacity:.75;
+    @keyframes noBounce{
+      0%   { transform: translate(20%, -50%) rotate(0deg); }
+      40%  { transform: translate(55%, -62%) rotate(10deg); }
+      75%  { transform: translate(45%, -50%) rotate(5deg); }
+      100% { transform: translate(110%, -65%) rotate(14deg); }
     }
 
-    /* screens */
+    .sub{ margin-top:12px; font-size:12px; opacity:.75; }
+
     .screen{ display:none; }
     .screen.active{ display:block; }
 
-    .yay{
-      font-size:32px;
-      margin:10px 0 12px;
-      font-weight:900;
-    }
+    .yay{ font-size:32px; margin:10px 0 12px; font-weight:900; }
 
     .pic{
       width:min(280px, 70vw);
@@ -176,7 +158,6 @@
       font-weight:800;
     }
 
-    /* toast */
     .toast{
       position:fixed;
       left:50%;
@@ -200,339 +181,103 @@
 
     canvas#confetti{ position:fixed; inset:0; pointer-events:none; }
 
-    /* =========================
-       CHIBI ANIMATION (POLISHED)
-       iOS FIX: animate actorInner
-       ========================= */
+    /* ===========================
+       SMALL SVG CHIBI (FACE FIXED)
+       Using SVG prevents iOS layer-splitting,
+       so face ALWAYS moves with character.
+       =========================== */
+
     .actorStage{
       position:absolute;
-      left:-340px;
-      bottom:-18px;
-      width:360px;
-      height:240px;
+      left:-220px;
+      bottom:-8px;
+      width:240px;
+      height:170px;
       pointer-events:none;
       z-index:6;
-      opacity:1;
 
-      /* make character smaller */
-      transform: scale(.72);
+      /* SMALL character */
+      transform: scale(.75);
       transform-origin: left bottom;
 
-      /* shadow on stage (NOT on rotating parts) */
-      filter: drop-shadow(0 20px 22px rgba(0,0,0,.12));
+      filter: drop-shadow(0 16px 18px rgba(0,0,0,.12));
     }
 
-    .actor{
-      position:absolute;
-      left:44px;
-      bottom:0;
-      width:220px;
-      height:220px;
-      pointer-events:none;
+    .actorStage.runIn{ animation: stageIn 1.0s cubic-bezier(.2,.92,.2,1) forwards; }
+    @keyframes stageIn{
+      from{ left:-260px; }
+      to{ left:-18px; }
     }
 
-    .actorInner{
-      position:absolute;
-      inset:0;
-      transform-origin: 92px 190px;
+    /* We animate the whole SVG group so face follows perfectly */
+    #chibiG{
+      transform-origin: 80px 135px;
       will-change: transform;
-      backface-visibility: hidden;
-      transform: translateZ(0);
     }
 
-    /* --- head --- */
-    .c-head{
-      position:absolute;
-      left:108px;
-      top:30px;
-      width:92px;
-      height:92px;
-      background:var(--skin);
-      border:4px solid var(--ink);
-      border-radius:46px;
+    /* run bob */
+    .run #chibiG{ animation: runBob .18s ease-in-out infinite; }
+    @keyframes runBob{
+      0%{ transform: translateY(0) rotate(0deg); }
+      50%{ transform: translateY(3px) rotate(-1deg); }
+      100%{ transform: translateY(0) rotate(0deg); }
     }
 
-    .c-hair{
-      position:absolute;
-      left:104px;
-      top:22px;
-      width:100px;
-      height:70px;
-      background:var(--hair);
-      border:4px solid var(--ink);
-      border-bottom:0;
-      border-radius:60px 60px 40px 40px;
-      transform: rotate(-2deg);
-    }
-    .c-fringe{
-      position:absolute;
-      left:112px;
-      top:52px;
-      width:86px;
-      height:32px;
-      background:var(--hair);
-      border:4px solid var(--ink);
-      border-top:0;
-      border-left:0;
-      border-right:0;
-      border-radius:0 0 30px 30px;
-      transform: rotate(-3deg);
+    /* kick body lean */
+    .kick #chibiG{ animation: kickLean .52s cubic-bezier(.2,.95,.2,1) forwards; }
+    @keyframes kickLean{
+      0%{ transform: translateX(0) rotate(0deg); }
+      30%{ transform: translateX(10px) rotate(-5deg); }
+      70%{ transform: translateX(26px) rotate(7deg); }
+      100%{ transform: translateX(18px) rotate(0deg); }
     }
 
-    .ear{
-      position:absolute;
-      width:18px;height:24px;
-      background:var(--skin);
-      border:4px solid var(--ink);
-      border-radius:12px;
-      top:62px;
-    }
-    .ear.l{ left:96px; transform: rotate(-8deg); }
-    .ear.r{ left:196px; transform: rotate(8deg); }
+    /* realistic right-leg kick (thigh + shin) */
+    .kick #thighR{ animation: thighKick .52s cubic-bezier(.2,.95,.2,1) forwards; }
+    .kick #shinR  { animation: shinKick  .52s cubic-bezier(.2,.95,.2,1) forwards; }
 
-    .eyeB{
-      position:absolute;
-      top:70px;
-      width:12px;height:18px;
-      background:var(--ink);
-      border-radius:10px;
+    @keyframes thighKick{
+      0%   { transform: rotate(-8deg); }
+      40%  { transform: rotate(-22deg); }
+      70%  { transform: rotate(-58deg); } /* forward */
+      100% { transform: rotate(-18deg); }
     }
-    .eyeB.l{ left:132px; }
-    .eyeB.r{ left:174px; }
-    .shine{
-      position:absolute; top:3px; left:3px;
-      width:4px;height:6px;background:#fff;border-radius:4px; opacity:.9;
-    }
-    .blush{
-      position:absolute; top:94px;
-      width:18px;height:10px;background:rgba(255,77,136,.35);
-      border-radius:10px;
-      filter: blur(.2px);
-    }
-    .blush.l{ left:118px; }
-    .blush.r{ left:188px; }
-    .mouth{
-      position:absolute;
-      left:50%;
-      top:102px;
-      width:26px;
-      height:16px;
-      transform: translateX(-50%);
-      border:4px solid var(--ink);
-      border-top:0;
-      border-left:0;
-      border-right:0;
-      border-radius:0 0 18px 18px;
+    @keyframes shinKick{
+      0%   { transform: rotate(18deg); } /* bent */
+      45%  { transform: rotate(10deg); }
+      70%  { transform: rotate(-26deg); } /* extends */
+      100% { transform: rotate(8deg); }
     }
 
-    /* --- hoodie body --- */
-    .c-body{
-      position:absolute;
-      left:118px;
-      top:118px;
-      width:74px;
-      height:78px;
-      background:linear-gradient(180deg, var(--hoodie), var(--hoodie2));
-      border:4px solid var(--ink);
-      border-radius:26px;
-      transform: rotate(-6deg);
-    }
-    .pocket{
-      position:absolute;
-      left:10px; top:42px;
-      width:54px;height:26px;
-      border:4px solid rgba(26,26,26,.85);
-      border-top:0;
-      border-left:0;
-      border-right:0;
-      border-radius:0 0 20px 20px;
-      opacity:.35;
-    }
-    .string{
-      position:absolute; top:16px;
-      width:6px;height:24px;background:rgba(255,255,255,.9);
-      border-radius:6px;
-      box-shadow: inset 0 -2px 0 rgba(0,0,0,.12);
-    }
-    .string.l{ left:22px; transform: rotate(8deg); }
-    .string.r{ right:22px; transform: rotate(-8deg); }
-
-    /* arms */
-    .arm{
-      position:absolute;
-      top:132px;
-      width:58px;height:18px;
-      background:linear-gradient(180deg, var(--hoodie), var(--hoodie2));
-      border:4px solid var(--ink);
-      border-radius:16px;
-      transform-origin: 12px 9px;
-    }
-    .arm.l{ left:86px; transform: rotate(18deg); }
-    .arm.r{ left:176px; transform: rotate(-24deg); }
-    .hand{
-      position:absolute;
-      right:-10px; top:2px;
-      width:18px;height:18px;
-      background:var(--skin);
-      border:4px solid var(--ink);
-      border-radius:50%;
-      transform: rotate(6deg);
-    }
-
-    /* legs base */
-    .leg{
-      position:absolute;
-      width:52px;
-      height:16px;
-      background:#111;
-      border:4px solid var(--ink);
-      border-radius:14px;
-      transform-origin: 10px 8px; /* hip */
-    }
-
-    /* left leg simple */
-    .leg.l{
-      left:118px;
-      top:184px;
-      transform: rotate(14deg);
-      opacity:.95;
-    }
-
-    /* right leg = THIGH + SHIN */
-    .leg.r{
-      left:132px;
-      top:196px;
-      transform: rotate(-10deg);
-    }
-
-    .shin{
-      position:absolute;
-      left:34px;   /* knee */
-      top:-2px;
-      width:44px;
-      height:14px;
-      background:#111;
-      border:4px solid var(--ink);
-      border-radius:14px;
-      transform-origin: 6px 7px; /* knee */
-      transform: rotate(18deg);  /* default bend */
-    }
-
-    .shoe{
-      position:absolute;
-      right:-16px;
-      top:-8px;
-      width:26px;
-      height:28px;
-      background:var(--shoe);
-      border:4px solid var(--ink);
-      border-radius:12px;
-      transform: rotate(10deg);
-      box-shadow: inset 0 -6px 0 rgba(255,255,255,.08);
+    /* look at camera */
+    .look #chibiG{ animation: lookCam .28s ease-in-out forwards; }
+    @keyframes lookCam{
+      from{ transform: translateX(18px) rotate(0deg); }
+      to{ transform: translateX(16px) rotate(-8deg); }
     }
 
     /* Heart FX */
-    .fx{
-      position:absolute;
-      left:206px;
-      top:44px;
-      width:44px;
-      height:44px;
+    #fxGroup{
       opacity:0;
+      transform-origin: 170px 40px;
       transform: scale(.6) translateY(10px);
-      transition: opacity .25s ease, transform .25s ease;
-      filter: drop-shadow(0 12px 18px rgba(255,77,136,.35));
     }
-    .fx.show{ opacity:1; transform: scale(1) translateY(0); }
-
-    .fx .h{
-      position:absolute;
-      left:12px; top:12px;
-      width:18px; height:18px;
-      background:var(--accent);
-      transform: rotate(45deg);
-      border-radius:4px;
+    .showFx #fxGroup{
+      animation: fxPop .32s ease-out forwards;
     }
-    .fx .h:before, .fx .h:after{
-      content:""; position:absolute; width:18px;height:18px; background:var(--accent); border-radius:50%;
-    }
-    .fx .h:before{ left:-9px; top:0; }
-    .fx .h:after{ left:0; top:-9px; }
-
-    .spark{
-      position:absolute;
-      width:6px;height:6px;
-      background:#fff;
-      border-radius:2px;
-      box-shadow: 0 0 0 2px rgba(255,255,255,.7);
-      transform: rotate(45deg);
-      opacity:.95;
-      animation: twinkle .9s ease-in-out infinite;
-    }
-    .spark.s1{ left:2px; top:20px; }
-    .spark.s2{ right:6px; top:6px; animation-delay:.12s; transform: rotate(45deg) scale(.9); }
-    .spark.s3{ right:2px; bottom:6px; animation-delay:.22s; transform: rotate(45deg) scale(.8); }
-    @keyframes twinkle{
-      0%,100%{ transform: rotate(45deg) scale(.85); opacity:.75; }
-      50%{ transform: rotate(45deg) scale(1.05); opacity:1; }
+    @keyframes fxPop{
+      0%{ opacity:0; transform: scale(.6) translateY(10px); }
+      100%{ opacity:1; transform: scale(1) translateY(0); }
     }
 
-    /* Stage in */
-    .actorStage.runIn{ animation: stageIn 1.1s cubic-bezier(.2,.92,.2,1) forwards; }
-    @keyframes stageIn{
-      from{ left:-360px; }
-      to{ left:-54px; }
-    }
-
-    /* Run bob */
-    .actorInner.run{ animation: runBob .22s ease-in-out infinite; }
-    @keyframes runBob{
-      0%{ transform: translateY(0); }
-      50%{ transform: translateY(4px); }
-      100%{ transform: translateY(0); }
-    }
-
-    /* Kick lean */
-    .actorInner.kick{ animation: kickLean .52s cubic-bezier(.2,.95,.2,1) forwards; }
-    @keyframes kickLean{
-      0%{ transform: translateX(0) rotate(0); }
-      35%{ transform: translateX(18px) rotate(-6deg); }
-      70%{ transform: translateX(44px) rotate(7deg); }
-      100%{ transform: translateX(28px) rotate(0); }
-    }
-
-    /* Realistic thigh + shin kick */
-    .actorInner.kick .leg.r{ animation: thighKick .52s cubic-bezier(.2,.95,.2,1) forwards; }
-    .actorInner.kick .leg.r .shin{ animation: shinKick .52s cubic-bezier(.2,.95,.2,1) forwards; }
-
-    @keyframes thighKick{
-      0%   { transform: rotate(-10deg); }
-      40%  { transform: rotate(-28deg); }
-      70%  { transform: rotate(-64deg); }
-      100% { transform: rotate(-22deg); }
-    }
-    @keyframes shinKick{
-      0%   { transform: rotate(18deg); }
-      45%  { transform: rotate(10deg); }
-      70%  { transform: rotate(-30deg); }
-      100% { transform: rotate(6deg); }
-    }
-
-    /* Look at camera */
-    .actorInner.look{ animation: lookCam .28s ease-in-out forwards; }
-    @keyframes lookCam{
-      from{ transform: translateX(28px) rotate(0); }
-      to{ transform: translateX(26px) rotate(-8deg); }
-    }
-
-    .actorStage.fadeOut{
+    /* fade out */
+    .fadeOut{
       transition: opacity .45s ease;
       opacity:0;
     }
 
-    /* Respect reduced motion */
     @media (prefers-reduced-motion: reduce){
-      .actorStage, .actorInner, #noBtn{ animation:none !important; transition:none !important; }
+      .actorStage, #noBtn{ animation:none !important; transition:none !important; }
     }
   </style>
 </head>
@@ -542,49 +287,89 @@
   <div class="wrap">
     <div class="card">
 
-      <!-- Chibi character (polished, iOS-safe) -->
-      <div class="actorStage" id="actorStage" aria-hidden="true">
-        <div class="actor" id="actor">
-          <div class="actorInner run" id="actorInner">
-            <div class="fx" id="fx">
-              <div class="h"></div>
-              <div class="spark s1"></div>
-              <div class="spark s2"></div>
-              <div class="spark s3"></div>
-            </div>
+      <!-- Small animated SVG chibi -->
+      <div class="actorStage run" id="actorStage" aria-hidden="true">
+        <svg width="240" height="170" viewBox="0 0 240 170" xmlns="http://www.w3.org/2000/svg">
+          <!-- FX heart + sparkles -->
+          <g id="fxGroup">
+            <g transform="translate(178 40)">
+              <path d="M0 8 C0 3 4 0 8 0 C11 0 13 2 14 4 C15 2 17 0 20 0 C24 0 28 3 28 8 C28 16 14 24 14 24 C14 24 0 16 0 8Z"
+                    fill="#ff4d88" />
+            </g>
+            <g fill="#ffffff" opacity=".95">
+              <rect x="166" y="28" width="6" height="6" transform="rotate(45 169 31)" />
+              <rect x="210" y="26" width="6" height="6" transform="rotate(45 213 29)" />
+              <rect x="214" y="52" width="6" height="6" transform="rotate(45 217 55)" />
+            </g>
+          </g>
 
-            <div class="ear l"></div>
-            <div class="ear r"></div>
-            <div class="c-hair"></div>
-            <div class="c-fringe"></div>
+          <!-- Character group (FACE IS INSIDE THIS GROUP => ALWAYS MOVES) -->
+          <g id="chibiG">
+            <!-- shadow/feet base -->
+            <ellipse cx="92" cy="150" rx="38" ry="10" fill="rgba(0,0,0,.12)"/>
 
-            <div class="c-head">
-              <div class="eyeB l"><div class="shine"></div></div>
-              <div class="eyeB r"><div class="shine"></div></div>
-              <div class="blush l"></div>
-              <div class="blush r"></div>
-              <div class="mouth"></div>
-            </div>
+            <!-- back leg -->
+            <g transform="translate(78 122) rotate(12)">
+              <rect x="0" y="0" width="44" height="14" rx="8" fill="#1a1a1a"/>
+              <rect x="36" y="-6" width="22" height="24" rx="10" fill="#1a1a1a"/>
+            </g>
 
-            <div class="arm l"><div class="hand"></div></div>
-            <div class="arm r"><div class="hand"></div></div>
+            <!-- right leg (kicking) thigh + shin -->
+            <g id="thighR" transform="translate(86 130) rotate(-8)">
+              <rect x="0" y="0" width="42" height="14" rx="8" fill="#1a1a1a"/>
+              <g id="shinR" transform="translate(30 -2) rotate(18)">
+                <rect x="0" y="0" width="34" height="12" rx="8" fill="#1a1a1a"/>
+                <rect x="24" y="-7" width="22" height="24" rx="10" fill="#1a1a1a"/>
+              </g>
+            </g>
 
-            <div class="c-body">
-              <div class="string l"></div>
-              <div class="string r"></div>
-              <div class="pocket"></div>
-            </div>
+            <!-- hoodie body -->
+            <g transform="translate(86 74) rotate(-6)">
+              <rect x="0" y="0" width="60" height="72" rx="22" fill="#ff6fa0" stroke="#1a1a1a" stroke-width="4"/>
+              <path d="M18 38 C18 52 42 52 42 38" fill="none" stroke="rgba(26,26,26,.35)" stroke-width="4" stroke-linecap="round"/>
+              <rect x="18" y="14" width="6" height="22" rx="6" fill="#fff" opacity=".9"/>
+              <rect x="36" y="14" width="6" height="22" rx="6" fill="#fff" opacity=".9"/>
+            </g>
 
-            <div class="leg l"><div class="shoe"></div></div>
+            <!-- arms -->
+            <g transform="translate(60 96) rotate(18)">
+              <rect x="0" y="0" width="48" height="16" rx="12" fill="#ff6fa0" stroke="#1a1a1a" stroke-width="4"/>
+              <circle cx="48" cy="8" r="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4"/>
+            </g>
+            <g transform="translate(132 98) rotate(-24)">
+              <rect x="0" y="0" width="48" height="16" rx="12" fill="#ff6fa0" stroke="#1a1a1a" stroke-width="4"/>
+              <circle cx="48" cy="8" r="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4"/>
+            </g>
 
-            <!-- right leg: thigh + shin -->
-            <div class="leg r">
-              <div class="shin">
-                <div class="shoe"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+            <!-- head + face (THIS is what was "stuck" before; now it's inside SVG group) -->
+            <!-- ears -->
+            <g>
+              <rect x="78" y="36" width="16" height="22" rx="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4" transform="rotate(-8 86 47)"/>
+              <rect x="152" y="36" width="16" height="22" rx="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4" transform="rotate(8 160 47)"/>
+            </g>
+
+            <!-- hair -->
+            <path d="M92 20 C108 6 140 6 156 20 C164 28 166 44 160 52 C150 40 98 40 88 52 C82 44 84 28 92 20Z"
+                  fill="#2b1d1a" stroke="#1a1a1a" stroke-width="4"/>
+            <!-- head -->
+            <circle cx="120" cy="48" r="44" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4"/>
+            <!-- fringe -->
+            <path d="M86 40 C102 54 138 54 154 40" fill="none" stroke="#2b1d1a" stroke-width="10" stroke-linecap="round"/>
+
+            <!-- eyes -->
+            <rect x="104" y="46" width="12" height="18" rx="8" fill="#1a1a1a"/>
+            <rect x="128" y="46" width="12" height="18" rx="8" fill="#1a1a1a"/>
+            <circle cx="108" cy="50" r="3" fill="#fff" opacity=".9"/>
+            <circle cx="132" cy="50" r="3" fill="#fff" opacity=".9"/>
+
+            <!-- blush -->
+            <rect x="90" y="70" width="18" height="10" rx="8" fill="rgba(255,77,136,.35)"/>
+            <rect x="150" y="70" width="18" height="10" rx="8" fill="rgba(255,77,136,.35)"/>
+
+            <!-- mouth -->
+            <path d="M112 78 C120 86 128 86 136 78" fill="none" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"/>
+          </g>
+        </svg>
       </div>
 
       <!-- QUESTION SCREEN -->
@@ -632,7 +417,7 @@
   <script>
     // ====== CUSTOMIZE ======
     const herName = "Farida";
-    const yesImage = "yay.jpg"; // upload to repo OR use a URL
+    const yesImage = "yay.jpg"; // upload to repo root OR use a URL
     // =======================
 
     const qScreen = document.getElementById("qScreen");
@@ -643,8 +428,7 @@
     const backBtn = document.getElementById("backBtn");
 
     const actorStage = document.getElementById("actorStage");
-    const actorInner = document.getElementById("actorInner");
-    const fx = document.getElementById("fx");
+    const fxGroup = document.getElementById("fxGroup");
 
     document.getElementById("nameSpan").textContent = herName;
     document.getElementById("nameSpan2").textContent = herName;
@@ -654,7 +438,7 @@
       toast.textContent = msg;
       toast.classList.add("show");
       clearTimeout(showToast._t);
-      showToast._t = setTimeout(()=> toast.classList.remove("show"), 1200);
+      showToast._t = setTimeout(() => toast.classList.remove("show"), 1200);
     }
 
     function goQuestion(){
@@ -662,14 +446,13 @@
       qScreen.classList.add("active");
       stopConfetti();
     }
-
     function goYes(){
       qScreen.classList.remove("active");
       yesScreen.classList.add("active");
       startConfetti();
     }
 
-    // If she clicks NO before kick (fast tap) or if it’s still there:
+    // If she clicks NO (fast tap before it gets kicked)
     noBtn.addEventListener("click", (e) => {
       e.preventDefault();
       showToast("Sorry, wrong answer. Try again. 😡");
@@ -679,23 +462,45 @@
     yesBtn.addEventListener("click", goYes);
     backBtn.addEventListener("click", goQuestion);
 
-    // Opening animation sequence
+    // Helper to add/remove classes cleanly
+    function setActor(state){
+      actorStage.classList.remove("run","kick","look","showFx","fadeOut");
+      if(state) actorStage.classList.add(state);
+    }
+
+    // Opening animation sequence:
+    // 1) run in from left
+    // 2) kick: leg swings and CONTACT -> triggers NO bounce
+    // 3) NO disappears
+    // 4) look + heart
+    // 5) fade out
     window.addEventListener("load", () => {
       actorStage.classList.add("runIn");
+      actorStage.classList.add("run");
 
-      // Kick timing
+      // Kick starts
       setTimeout(() => {
-        actorInner.classList.remove("run");
-        actorInner.classList.add("kick");
-        noBtn.classList.add("kicked");
-      }, 1100);
+        actorStage.classList.remove("run");
+        actorStage.classList.add("kick");
 
-      // Look + heart FX
+        // CONTACT MOMENT: align with peak extension (around 70% of 520ms ≈ 360ms)
+        setTimeout(() => {
+          noBtn.classList.add("kickHit");
+        }, 360);
+
+        // After bounce, hide it
+        setTimeout(() => {
+          noBtn.classList.add("kickGone");
+        }, 720);
+
+      }, 950);
+
+      // Look + FX
       setTimeout(() => {
-        actorInner.classList.remove("kick");
-        actorInner.classList.add("look");
-        fx.classList.add("show");
-      }, 1600);
+        actorStage.classList.remove("kick");
+        actorStage.classList.add("look");
+        actorStage.classList.add("showFx");
+      }, 1650);
 
       // Fade out
       setTimeout(() => {
@@ -754,7 +559,6 @@
       if(confettiTimer) cancelAnimationFrame(confettiTimer);
       draw();
     }
-
     function stopConfetti(){
       if(confettiTimer) cancelAnimationFrame(confettiTimer);
       confettiTimer = null;
