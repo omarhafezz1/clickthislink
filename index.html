@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Will you be my Valentine?</title>
+  <style>
+    :root{
+      --bg1:#f8c7d6;
+      --bg2:#f4a9c6;
+      --card:#ffffffcc;
+      --text:#111;
+      --accent:#ff4d88;
+      --shadow: 0 20px 50px rgba(0,0,0,.12);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: radial-gradient(circle at 30% 20%, #ffd6e4 0%, var(--bg1) 35%, var(--bg2) 100%);
+      overflow:hidden;
+      color:var(--text);
+    }
+
+    .wrap{
+      width:min(520px, 92vw);
+      padding:24px 18px;
+      position:relative;
+    }
+
+    .card{
+      background:var(--card);
+      backdrop-filter: blur(6px);
+      border-radius:18px;
+      box-shadow: var(--shadow);
+      padding:26px 22px 22px;
+      text-align:center;
+      border:1px solid rgba(255,255,255,.6);
+      position:relative;
+    }
+
+    .kitty{
+      width:82px;
+      height:82px;
+      margin:0 auto 10px;
+      border-radius:50%;
+      background: #ffcfb8;
+      position:relative;
+      box-shadow: 0 10px 22px rgba(0,0,0,.08) inset;
+    }
+    .kitty:before, .kitty:after{
+      content:"";
+      position:absolute;
+      top:-10px;
+      width:22px; height:22px;
+      background:#ffcfb8;
+      border-radius:6px 18px 6px 18px;
+      transform: rotate(10deg);
+    }
+    .kitty:before{ left:10px; }
+    .kitty:after{ right:10px; transform: rotate(-10deg); }
+    .eye{
+      position:absolute;
+      top:34px;
+      width:8px; height:8px;
+      background:#111;
+      border-radius:50%;
+    }
+    .eye.left{ left:26px; }
+    .eye.right{ right:26px; }
+    .nose{
+      position:absolute;
+      top:46px; left:50%;
+      transform:translateX(-50%);
+      width:10px; height:10px;
+      background:#ff6fa0;
+      border-radius:50% 50% 60% 60%;
+    }
+    .heart{
+      position:absolute;
+      top:-8px; right:-4px;
+      width:18px; height:18px;
+      background:var(--accent);
+      transform: rotate(45deg);
+      border-radius:4px;
+      box-shadow: 0 10px 18px rgba(255,77,136,.35);
+    }
+    .heart:before,.heart:after{
+      content:"";
+      position:absolute;
+      width:18px; height:18px;
+      background:var(--accent);
+      border-radius:50%;
+    }
+    .heart:before{ left:-9px; top:0; }
+    .heart:after{ left:0; top:-9px; }
+
+    h1{
+      font-size:28px;
+      line-height:1.15;
+      margin:10px 0 16px;
+      letter-spacing:-0.5px;
+    }
+
+    .btnRow{
+      display:flex;
+      gap:14px;
+      justify-content:center;
+      align-items:center;
+      margin-top:10px;
+      position:relative;
+      height:56px; /* gives room for the moving No button */
+    }
+
+    button{
+      border:0;
+      padding:11px 20px;
+      border-radius:999px;
+      font-size:16px;
+      cursor:pointer;
+      transition: transform .12s ease, opacity .12s ease, filter .12s ease;
+      user-select:none;
+    }
+    button:active{ transform: scale(.97); }
+
+    #yesBtn{
+      background:var(--accent);
+      color:#fff;
+      box-shadow: 0 12px 24px rgba(255,77,136,.30);
+      font-weight:700;
+      min-width:92px;
+    }
+
+    #noBtn{
+      background:#eaeaea;
+      color:#111;
+      min-width:92px;
+      position:absolute; /* lets us move it inside .btnRow */
+      right:0;
+      box-shadow: 0 10px 20px rgba(0,0,0,.10);
+    }
+
+    .sub{
+      margin-top:12px;
+      font-size:12px;
+      opacity:.75;
+    }
+
+    /* screens */
+    .screen{ display:none; }
+    .screen.active{ display:block; }
+
+    .yay{
+      font-size:32px;
+      margin:10px 0 12px;
+      font-weight:900;
+    }
+
+    .pic{
+      width:min(280px, 70vw);
+      aspect-ratio: 1/1;
+      border-radius:14px;
+      overflow:hidden;
+      margin:12px auto 4px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.18);
+      border: 6px solid rgba(255,255,255,.7);
+      background:#fff;
+    }
+    .pic img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .smallBtn{
+      margin-top:14px;
+      background:#fff;
+      box-shadow: 0 12px 25px rgba(0,0,0,.10);
+      font-weight:700;
+    }
+
+    /* toast */
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:28px;
+      transform: translateX(-50%);
+      background: rgba(20,20,20,.90);
+      color:#fff;
+      padding:12px 16px;
+      border-radius:12px;
+      font-size:14px;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+      box-shadow: 0 18px 40px rgba(0,0,0,.25);
+    }
+    .toast.show{
+      opacity:1;
+      transform: translateX(-50%) translateY(-6px);
+    }
+
+    /* confetti canvas */
+    canvas#confetti{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+
+  <div class="wrap">
+    <div class="card">
+      <!-- QUESTION SCREEN -->
+      <div id="qScreen" class="screen active">
+        <div class="kitty">
+          <span class="heart"></span>
+          <span class="eye left"></span>
+          <span class="eye right"></span>
+          <span class="nose"></span>
+        </div>
+
+        <h1><span id="nameSpan">nirali</span> will you be my valentine?</h1>
+
+        <div class="btnRow" id="btnArea">
+          <button id="yesBtn">Yes</button>
+          <button id="noBtn">No</button>
+        </div>
+
+        <div class="sub">“No” seems a bit shy 😈</div>
+      </div>
+
+      <!-- YES SCREEN -->
+      <div id="yesScreen" class="screen">
+        <div class="kitty">
+          <span class="heart"></span>
+          <span class="eye left"></span>
+          <span class="eye right"></span>
+          <span class="nose"></span>
+        </div>
+
+        <h1><span id="nameSpan2">nirali</span> will you be my valentine?</h1>
+        <div class="yay">YAY! 🎉</div>
+
+        <div class="pic">
+          <!-- Replace this with your own image file (see notes below) -->
+          <img id="yayImg" src="https://images.unsplash.com/photo-1520975693416-35a16d6b4b0d?auto=format&fit=crop&w=800&q=80" alt="yay" />
+        </div>
+
+        <button class="smallBtn" id="backBtn">Ask again</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Sorry, wrong answer. Try again.</div>
+
+  <script>
+    // ====== CUSTOMIZE THESE 2 LINES ======
+    const herName = "Farida<3"; // change name
+    // Put your own image URL OR a local file like "yay.jpg"
+    const yesImage = "https://images.unsplash.com/photo-1520975693416-35a16d6b4b0d?auto=format&fit=crop&w=800&q=80";
+    // =====================================
+
+    const qScreen = document.getElementById("qScreen");
+    const yesScreen = document.getElementById("yesScreen");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const btnArea = document.getElementById("btnArea");
+    const toast = document.getElementById("toast");
+    const backBtn = document.getElementById("backBtn");
+
+    document.getElementById("nameSpan").textContent = herName;
+    document.getElementById("nameSpan2").textContent = herName;
+    document.getElementById("yayImg").src = yesImage;
+
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(()=> toast.classList.remove("show"), 1200);
+    }
+
+    function goQuestion(){
+      yesScreen.classList.remove("active");
+      qScreen.classList.add("active");
+      stopConfetti();
+      resetNoBtn();
+    }
+    function goYes(){
+      qScreen.classList.remove("active");
+      yesScreen.classList.add("active");
+      startConfetti();
+    }
+
+    // ----- NO button behavior: show message, then return to question -----
+    noBtn.addEventListener("click", () => {
+      showToast("Sorry, wrong answer. Try again.");
+      // Optional: a tiny shake effect
+      noBtn.style.filter = "brightness(0.95)";
+      setTimeout(()=> noBtn.style.filter = "", 150);
+
+      // Ensure we're on question screen (in case)
+      // and reposition No to keep it playful
+      hopNoBtn();
+
+      // "takes her back to the question" (if you ever add other states)
+      setTimeout(() => {
+        goQuestion();
+      }, 900);
+    });
+
+    // ----- Make NO dodge on hover/mousemove (desktop) -----
+    function hopNoBtn(){
+      const area = btnArea.getBoundingClientRect();
+      const btn = noBtn.getBoundingClientRect();
+
+      // random position inside the button area
+      const padding = 6;
+      const maxX = area.width - btn.width - padding;
+      const maxY = area.height - btn.height - padding;
+
+      const x = Math.max(padding, Math.random() * maxX);
+      const y = Math.max(padding, Math.random() * maxY);
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+    }
+
+    function resetNoBtn(){
+      noBtn.style.left = "";
+      noBtn.style.top = "";
+      noBtn.style.right = "0";
+    }
+
+    // Desktop hover dodge:
+    noBtn.addEventListener("mouseenter", hopNoBtn);
+
+    // Mobile-friendly: if user tries to tap near No, move it a bit
+    btnArea.addEventListener("touchstart", (e) => {
+      const t = e.touches[0];
+      const btn = noBtn.getBoundingClientRect();
+      const dx = Math.abs(t.clientX - (btn.left + btn.width/2));
+      const dy = Math.abs(t.clientY - (btn.top + btn.height/2));
+      if (dx < 90 && dy < 60) hopNoBtn();
+    }, {passive:true});
+
+    // ----- YES button -----
+    yesBtn.addEventListener("click", goYes);
+    backBtn.addEventListener("click", goQuestion);
+
+    // ================== CONFETTI (simple canvas) ==================
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    let W, H, confettiTimer = null;
+    let pieces = [];
+
+    function resize(){
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    function makePieces(n=160){
+      pieces = Array.from({length:n}, () => ({
+        x: Math.random()*W,
+        y: -20 - Math.random()*H,
+        r: 2 + Math.random()*4,
+        vy: 2 + Math.random()*4,
+        vx: -1 + Math.random()*2,
+        a: Math.random()*Math.PI*2,
+        va: -0.1 + Math.random()*0.2
+      }));
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      ctx.globalAlpha = 0.9;
+      for(const p of pieces){
+        p.x += p.vx;
+        p.y += p.vy;
+        p.a += p.va;
+
+        // wrap
+        if(p.y > H+30) { p.y = -20; p.x = Math.random()*W; }
+        if(p.x < -30) p.x = W+30;
+        if(p.x > W+30) p.x = -30;
+
+        // pastel confetti
+        const hue = ( (p.x/W)*120 + 330 ) % 360; // pink/purple range
+        ctx.fillStyle = `hsl(${hue} 90% 75%)`;
+        ctx.beginPath();
+        ctx.ellipse(p.x, p.y, p.r, p.r*1.4, p.a, 0, Math.PI*2);
+        ctx.fill();
+      }
+      confettiTimer = requestAnimationFrame(draw);
+    }
+
+    function startConfetti(){
+      makePieces();
+      if(confettiTimer) cancelAnimationFrame(confettiTimer);
+      draw();
+    }
+    function stopConfetti(){
+      if(confettiTimer) cancelAnimationFrame(confettiTimer);
+      confettiTimer = null;
+      ctx.clearRect(0,0,W,H);
+    }
+  </script>
+</body>
+</html>
