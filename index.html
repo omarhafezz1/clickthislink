@@ -107,19 +107,19 @@
       transition: opacity .25s ease;
     }
 
-    /* kick + bounce + vanish */
-    #noBtn.kickHit{
-      animation: noBounce .42s cubic-bezier(.2,.95,.2,1) forwards;
+    /* Punch hit: bounce, then vanish */
+    #noBtn.hit{
+      animation: btnHit .34s cubic-bezier(.2,.95,.2,1) forwards;
     }
-    #noBtn.kickGone{
+    #noBtn.gone{
       opacity:0;
       pointer-events:none;
     }
-    @keyframes noBounce{
+    @keyframes btnHit{
       0%   { transform: translate(20%, -50%) rotate(0deg) scale(1); }
-      35%  { transform: translate(70%, -70%) rotate(14deg) scale(1.06); }
-      70%  { transform: translate(52%, -56%) rotate(7deg) scale(.98); }
-      100% { transform: translate(150%, -72%) rotate(18deg) scale(.92); }
+      45%  { transform: translate(42%, -62%) rotate(8deg) scale(1.06); }
+      80%  { transform: translate(30%, -52%) rotate(4deg) scale(.98); }
+      100% { transform: translate(76%, -60%) rotate(10deg) scale(.92); }
     }
 
     .sub{ margin-top:12px; font-size:12px; opacity:.75; }
@@ -170,41 +170,41 @@
     canvas#confetti{ position:fixed; inset:0; pointer-events:none; }
 
     /* ===========================
-       Chibi Stage (moves to NO!)
+       Character (SVG) + punch
        =========================== */
     .actorStage{
       position:absolute;
       left:-260px;
       bottom:-10px;
-      width:260px;
-      height:180px;
+      width:280px;
+      height:190px;
       pointer-events:none;
       z-index:6;
 
-      transform: scale(.66);
+      /* small */
+      transform: scale(.65) translateX(0px);
       transform-origin: left bottom;
       filter: drop-shadow(0 16px 18px rgba(0,0,0,.12));
+
+      /* set by JS */
+      --travelX: 420px;
     }
 
-    /* We animate translateX in KEYFRAMES so it reaches the NO button (right side) */
-    .actorStage.play{
-      animation: stagePath 1.55s cubic-bezier(.2,.92,.2,1) forwards;
+    /* movement path to NO */
+    .actorStage.runIn{
+      animation: stagePath 1.15s cubic-bezier(.2,.92,.2,1) forwards;
     }
-
-    /* This path brings him to the NO button area, not Yes */
     @keyframes stagePath{
-      0%   { transform: scale(.66) translateX(0px); }
-      62%  { transform: scale(.66) translateX(340px); } /* arrive near NO */
-      100% { transform: scale(.66) translateX(340px); }
+      0%   { transform: scale(.65) translateX(0px); }
+      65%  { transform: scale(.65) translateX(var(--travelX)); }
+      100% { transform: scale(.65) translateX(var(--travelX)); }
     }
 
-    /* whole character group */
+    /* whole body group */
     #chibiG{
       transform-origin: 80px 135px;
       will-change: transform;
     }
-
-    /* run bob while traveling */
     .run #chibiG{ animation: runBob .18s ease-in-out infinite; }
     @keyframes runBob{
       0%{ transform: translateY(0) rotate(0deg); }
@@ -212,55 +212,52 @@
       100%{ transform: translateY(0) rotate(0deg); }
     }
 
-    /* ---- Leg physics (fixed pivots + more realistic angles) ---- */
-    #thighR, #shinR, #legBack{
+    /* punch: body lean */
+    .punch #chibiG{ animation: bodyPunch .46s cubic-bezier(.2,.95,.2,1) forwards; }
+    @keyframes bodyPunch{
+      0%   { transform: translateX(0) rotate(0deg); }
+      35%  { transform: translateX(5px) rotate(-5deg); }
+      70%  { transform: translateX(12px) rotate(6deg); }
+      100% { transform: translateX(6px) rotate(0deg); }
+    }
+
+    /* arm physics (right arm) */
+    #armR, #forearmR{
       transform-box: fill-box;
-      transform-origin: 8px 7px;
+      transform-origin: 8px 8px; /* shoulder / elbow pivots */
     }
-    #shinR{ transform-origin: 5px 6px; }
+    #forearmR{ transform-origin: 6px 8px; }
 
-    /* back leg braces for kick */
-    .kick #legBack{ animation: backBrace .52s cubic-bezier(.2,.95,.2,1) forwards; }
-    @keyframes backBrace{
-      0%{ transform: rotate(14deg); }
-      55%{ transform: rotate(22deg); }
-      100%{ transform: rotate(16deg); }
+    .punch #armR{ animation: upperArm .46s cubic-bezier(.2,.95,.2,1) forwards; }
+    .punch #forearmR{ animation: foreArm .46s cubic-bezier(.2,.95,.2,1) forwards; }
+
+    @keyframes upperArm{
+      0%   { transform: rotate(-24deg); }
+      45%  { transform: rotate(-8deg); }
+      70%  { transform: rotate(10deg); } /* drive forward */
+      100% { transform: rotate(-14deg); } /* recoil */
     }
-
-    /* kick lean (hip + torso) */
-    .kick #chibiG{ animation: kickBody .52s cubic-bezier(.2,.95,.2,1) forwards; }
-    @keyframes kickBody{
-      0%{ transform: translateX(0) rotate(0deg); }
-      30%{ transform: translateX(4px) rotate(-4deg); }
-      70%{ transform: translateX(10px) rotate(6deg); }
-      100%{ transform: translateX(6px) rotate(0deg); }
-    }
-
-    /* THIGH swings then SHIN extends at contact */
-    .kick #thighR{ animation: thighKick .52s cubic-bezier(.2,.95,.2,1) forwards; }
-    .kick #shinR { animation: shinKick  .52s cubic-bezier(.2,.95,.2,1) forwards; }
-
-    @keyframes thighKick{
-      0%   { transform: rotate(-10deg); }
-      35%  { transform: rotate(-20deg); }
-      70%  { transform: rotate(-52deg); } /* contact */
-      100% { transform: rotate(-18deg); }
-    }
-    @keyframes shinKick{
-      0%   { transform: rotate(20deg); }  /* bent */
+    @keyframes foreArm{
+      0%   { transform: rotate(26deg); }  /* bent */
       45%  { transform: rotate(10deg); }
-      70%  { transform: rotate(-18deg); } /* extension at contact */
-      100% { transform: rotate(8deg); }   /* recoil */
+      70%  { transform: rotate(-18deg); } /* extend at contact */
+      100% { transform: rotate(10deg); }
     }
 
-    /* look at camera */
-    .look #chibiG{ animation: lookCam .28s ease-in-out forwards; }
-    @keyframes lookCam{
-      from{ transform: rotate(0deg) translateX(0); }
-      to{ transform: rotate(-8deg) translateX(-2px); }
+    /* small impact flash near fist */
+    #impact{
+      opacity:0;
+      transform-origin: 0 0;
+    }
+    .impactOn #impact{
+      animation: impactPop .18s ease-out forwards;
+    }
+    @keyframes impactPop{
+      0%{ opacity:0; transform: scale(.6); }
+      100%{ opacity:1; transform: scale(1.05); }
     }
 
-    /* heart FX */
+    /* heart fx */
     #fxGroup{
       opacity:0;
       transform-origin: 170px 40px;
@@ -270,6 +267,13 @@
     @keyframes fxPop{
       0%{ opacity:0; transform: scale(.6) translateY(10px); }
       100%{ opacity:1; transform: scale(1) translateY(0); }
+    }
+
+    /* look at camera */
+    .look #chibiG{ animation: lookCam .28s ease-in-out forwards; }
+    @keyframes lookCam{
+      from{ transform: rotate(0deg) translateX(0); }
+      to{ transform: rotate(-8deg) translateX(-2px); }
     }
 
     .fadeOut{ transition: opacity .45s ease; opacity:0; }
@@ -287,7 +291,8 @@
 
       <!-- Character -->
       <div class="actorStage" id="actorStage" aria-hidden="true">
-        <svg width="260" height="180" viewBox="0 0 240 170" xmlns="http://www.w3.org/2000/svg">
+        <svg width="280" height="190" viewBox="0 0 240 170" xmlns="http://www.w3.org/2000/svg">
+          <!-- Heart + sparkles -->
           <g id="fxGroup">
             <g transform="translate(178 40)">
               <path d="M0 8 C0 3 4 0 8 0 C11 0 13 2 14 4 C15 2 17 0 20 0 C24 0 28 3 28 8 C28 16 14 24 14 24 C14 24 0 16 0 8Z" fill="#ff4d88"/>
@@ -299,22 +304,27 @@
             </g>
           </g>
 
+          <!-- Impact flash (near fist; positioned to the right) -->
+          <g id="impact" transform="translate(182 96)">
+            <path d="M12 0 L16 10 L26 6 L20 16 L30 18 L20 22 L26 32 L16 28 L12 38 L8 28 L-2 32 L4 22 L-6 18 L4 16 L-2 6 L8 10 Z"
+                  fill="rgba(255,255,255,.95)" />
+          </g>
+
+          <!-- Character body -->
           <g id="chibiG">
             <ellipse cx="92" cy="150" rx="38" ry="10" fill="rgba(0,0,0,.12)"/>
 
-            <g id="legBack" transform="translate(78 122) rotate(14)">
+            <!-- legs -->
+            <g transform="translate(78 122) rotate(14)">
               <rect x="0" y="0" width="44" height="14" rx="8" fill="#1a1a1a"/>
               <rect x="36" y="-6" width="22" height="24" rx="10" fill="#1a1a1a"/>
             </g>
-
-            <g id="thighR" transform="translate(86 130) rotate(-10)">
-              <rect x="0" y="0" width="42" height="14" rx="8" fill="#1a1a1a"/>
-              <g id="shinR" transform="translate(30 -2) rotate(20)">
-                <rect x="0" y="0" width="34" height="12" rx="8" fill="#1a1a1a"/>
-                <rect x="24" y="-7" width="22" height="24" rx="10" fill="#1a1a1a"/>
-              </g>
+            <g transform="translate(88 130) rotate(-10)">
+              <rect x="0" y="0" width="46" height="14" rx="8" fill="#1a1a1a"/>
+              <rect x="38" y="-6" width="22" height="24" rx="10" fill="#1a1a1a"/>
             </g>
 
+            <!-- hoodie -->
             <g transform="translate(86 74) rotate(-6)">
               <rect x="0" y="0" width="60" height="72" rx="22" fill="#ff6fa0" stroke="#1a1a1a" stroke-width="4"/>
               <path d="M18 38 C18 52 42 52 42 38" fill="none" stroke="rgba(26,26,26,.35)" stroke-width="4" stroke-linecap="round"/>
@@ -322,33 +332,40 @@
               <rect x="36" y="14" width="6" height="22" rx="6" fill="#fff" opacity=".9"/>
             </g>
 
+            <!-- left arm (static) -->
             <g transform="translate(60 96) rotate(18)">
               <rect x="0" y="0" width="48" height="16" rx="12" fill="#ff6fa0" stroke="#1a1a1a" stroke-width="4"/>
               <circle cx="48" cy="8" r="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4"/>
             </g>
-            <g transform="translate(132 98) rotate(-24)">
-              <rect x="0" y="0" width="48" height="16" rx="12" fill="#ff6fa0" stroke="#1a1a1a" stroke-width="4"/>
-              <circle cx="48" cy="8" r="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4"/>
+
+            <!-- right arm (punching): upper arm + forearm + fist -->
+            <g id="armR" transform="translate(132 98) rotate(-24)">
+              <rect x="0" y="0" width="34" height="16" rx="12" fill="#ff6fa0" stroke="#1a1a1a" stroke-width="4"/>
+              <g id="forearmR" transform="translate(26 0) rotate(26)">
+                <rect x="0" y="0" width="28" height="14" rx="12" fill="#ff6fa0" stroke="#1a1a1a" stroke-width="4"/>
+                <circle cx="30" cy="7" r="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4"/>
+              </g>
             </g>
 
+            <!-- ears -->
             <g>
               <rect x="78" y="36" width="16" height="22" rx="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4" transform="rotate(-8 86 47)"/>
               <rect x="152" y="36" width="16" height="22" rx="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4" transform="rotate(8 160 47)"/>
             </g>
 
+            <!-- bandana/hair -->
             <path d="M92 14 C108 2 140 2 156 14 C164 22 166 38 160 46 C150 34 98 34 88 46 C82 38 84 22 92 14Z"
                   fill="#2b1d1a" stroke="#1a1a1a" stroke-width="4"/>
             <circle cx="120" cy="48" r="44" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4"/>
             <path d="M86 36 C102 50 138 50 154 36" fill="none" stroke="#2b1d1a" stroke-width="10" stroke-linecap="round"/>
 
+            <!-- face -->
             <rect x="104" y="46" width="12" height="18" rx="8" fill="#1a1a1a"/>
             <rect x="128" y="46" width="12" height="18" rx="8" fill="#1a1a1a"/>
             <circle cx="108" cy="50" r="3" fill="#fff" opacity=".9"/>
             <circle cx="132" cy="50" r="3" fill="#fff" opacity=".9"/>
-
             <rect x="90" y="70" width="18" height="10" rx="8" fill="rgba(255,77,136,.35)"/>
             <rect x="150" y="70" width="18" height="10" rx="8" fill="rgba(255,77,136,.35)"/>
-
             <path d="M112 78 C120 86 128 86 136 78" fill="none" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"/>
           </g>
         </svg>
@@ -399,17 +416,18 @@
   <script>
     // ====== CUSTOMIZE ======
     const herName = "Farida";
-    const yesImage = "yay.jpg"; // upload to repo root OR use a URL
+    const yesImage = "yay.jpg";
     // =======================
 
     const qScreen = document.getElementById("qScreen");
     const yesScreen = document.getElementById("yesScreen");
     const yesBtn = document.getElementById("yesBtn");
     const noBtn = document.getElementById("noBtn");
+    const btnArea = document.getElementById("btnArea");
     const toast = document.getElementById("toast");
     const backBtn = document.getElementById("backBtn");
     const actorStage = document.getElementById("actorStage");
-    const btnArea = document.getElementById("btnArea");
+    const impact = document.getElementById("impact");
 
     document.getElementById("nameSpan").textContent = herName;
     document.getElementById("nameSpan2").textContent = herName;
@@ -433,6 +451,7 @@
       startConfetti();
     }
 
+    // If she clicks NO before punch
     noBtn.addEventListener("click", (e) => {
       e.preventDefault();
       showToast("Sorry, wrong answer. Try again. 😡");
@@ -442,59 +461,51 @@
     yesBtn.addEventListener("click", goYes);
     backBtn.addEventListener("click", goQuestion);
 
-    // Make him actually reach the NO button (auto-calculated)
-    function moveActorToNo(){
+    // Put character close enough so fist reaches NO
+    function positionActorToNo(){
       const noRect = noBtn.getBoundingClientRect();
       const areaRect = btnArea.getBoundingClientRect();
 
-      // How far from the left edge of the card button area is the NO button center?
       const noCenterX = (noRect.left + noRect.width/2) - areaRect.left;
 
-      // Convert px travel to match actorStage scaling; tune factor for realism
-      // actorStage base starts off-card; we want translateX so the kick reaches NO
-      const travel = Math.max(260, Math.min(520, noCenterX + 220));
-
+      // Travel so the character’s fist (near right edge of SVG) is near NO center
+      // Tune offsets for realism
+      const travel = Math.max(280, Math.min(560, noCenterX + 250));
       actorStage.style.setProperty("--travelX", travel + "px");
     }
 
-    // inject dynamic keyframes using CSS variable --travelX
-    const style = document.createElement("style");
-    style.textContent = `
-      @keyframes stagePath{
-        0%   { transform: scale(.66) translateX(0px); }
-        62%  { transform: scale(.66) translateX(var(--travelX, 380px)); }
-        100% { transform: scale(.66) translateX(var(--travelX, 380px)); }
-      }
-    `;
-    document.head.appendChild(style);
-
     window.addEventListener("load", () => {
-      moveActorToNo();
+      positionActorToNo();
 
-      actorStage.classList.add("play");
+      actorStage.classList.add("runIn");
       actorStage.classList.add("run");
 
-      // start kick right after arriving near NO
+      // Punch right after arrival
       setTimeout(() => {
         actorStage.classList.remove("run");
-        actorStage.classList.add("kick");
+        actorStage.classList.add("punch");
 
-        // contact moment
-        setTimeout(() => noBtn.classList.add("kickHit"), 360);
-        // vanish after bounce
-        setTimeout(() => noBtn.classList.add("kickGone"), 760);
+        // CONTACT moment: when forearm is most extended (~70% of 460ms ≈ 320ms)
+        setTimeout(() => {
+          actorStage.classList.add("impactOn");
+          noBtn.classList.add("hit");
+        }, 320);
+
+        // remove impact flash quickly + vanish button
+        setTimeout(() => actorStage.classList.remove("impactOn"), 520);
+        setTimeout(() => noBtn.classList.add("gone"), 620);
 
       }, 980);
 
-      // look + heart
+      // Look + heart
       setTimeout(() => {
-        actorStage.classList.remove("kick");
+        actorStage.classList.remove("punch");
         actorStage.classList.add("look");
         actorStage.classList.add("showFx");
-      }, 1680);
+      }, 1650);
 
-      // fade out
-      setTimeout(() => actorStage.classList.add("fadeOut"), 2780);
+      // Fade out
+      setTimeout(() => actorStage.classList.add("fadeOut"), 2750);
     });
 
     // ================== CONFETTI (simple canvas) ==================
