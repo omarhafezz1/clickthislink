@@ -114,7 +114,7 @@
       align-items:center;
       margin-top:10px;
       position:relative;
-      height:56px; /* gives room for the moving No button */
+      height:56px; /* room for moving No button */
     }
 
     button{
@@ -136,11 +136,14 @@
       min-width:92px;
     }
 
+    /* SMALLER NO BUTTON */
     #noBtn{
       background:#eaeaea;
       color:#111;
-      min-width:92px;
-      position:absolute; /* lets us move it inside .btnRow */
+      min-width:70px;
+      padding:8px 14px;
+      font-size:14px;
+      position:absolute;
       right:0;
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
     }
@@ -228,7 +231,7 @@
           <span class="nose"></span>
         </div>
 
-        <h1><span id="nameSpan">nirali</span> will you be my valentine?</h1>
+        <h1><span id="nameSpan">Farida</span> will you be my valentine?</h1>
 
         <div class="btnRow" id="btnArea">
           <button id="yesBtn">Yes</button>
@@ -247,12 +250,11 @@
           <span class="nose"></span>
         </div>
 
-        <h1><span id="nameSpan2">nirali</span> will you be my valentine?</h1>
+        <h1><span id="nameSpan2">Farida</span> will you be my valentine?</h1>
         <div class="yay">YAY! 🎉</div>
 
         <div class="pic">
-          <!-- Replace this with your own image file (see notes below) -->
-          <img id="yayImg" src="https://images.unsplash.com/photo-1520975693416-35a16d6b4b0d?auto=format&fit=crop&w=800&q=80" alt="yay" />
+          <img id="yayImg" src="yay.jpg" alt="yay" />
         </div>
 
         <button class="smallBtn" id="backBtn">Ask again</button>
@@ -260,13 +262,12 @@
     </div>
   </div>
 
-  <div id="toast" class="toast">Sorry, wrong answer. Try again.</div>
+  <div id="toast" class="toast">Sorry, wrong answer. Try again. 😡</div>
 
   <script>
     // ====== CUSTOMIZE THESE 2 LINES ======
-    const herName = "Farida"; // change name
-    // Put your own image URL OR a local file like "yay.jpg"
-    const yesImage = "yay.jpg";
+    const herName = "Farida";       // change name
+    const yesImage = "yay.jpg";     // upload this file to your repo OR use an image URL
     // =====================================
 
     const qScreen = document.getElementById("qScreen");
@@ -302,27 +303,18 @@
 
     // ----- NO button behavior: show message, then return to question -----
     noBtn.addEventListener("click", () => {
-      showToast("Sorry, wrong answer. Try again.");
-      // Optional: a tiny shake effect
-      noBtn.style.filter = "brightness(0.95)";
-      setTimeout(()=> noBtn.style.filter = "", 150);
-
-      // Ensure we're on question screen (in case)
-      // and reposition No to keep it playful
-      hopNoBtn();
-
-      // "takes her back to the question" (if you ever add other states)
+      showToast("Sorry, wrong answer. Try again. 😡");
+      hopNoBtn(); // keep it playful
       setTimeout(() => {
         goQuestion();
       }, 900);
     });
 
-    // ----- Make NO dodge on hover/mousemove (desktop) -----
+    // ----- Move NO button to a random place inside its area -----
     function hopNoBtn(){
       const area = btnArea.getBoundingClientRect();
       const btn = noBtn.getBoundingClientRect();
 
-      // random position inside the button area
       const padding = 6;
       const maxX = area.width - btn.width - padding;
       const maxY = area.height - btn.height - padding;
@@ -340,8 +332,18 @@
       noBtn.style.right = "0";
     }
 
-    // Desktop hover dodge:
-    noBtn.addEventListener("mouseenter", hopNoBtn);
+    // ----- KEEP MOVING WHILE HOVERING (DESKTOP) -----
+    let hoverTimer = null;
+
+    noBtn.addEventListener("mouseenter", () => {
+      hopNoBtn(); // move immediately
+      hoverTimer = setInterval(hopNoBtn, 180); // keep moving
+    });
+
+    noBtn.addEventListener("mouseleave", () => {
+      clearInterval(hoverTimer);
+      hoverTimer = null;
+    });
 
     // Mobile-friendly: if user tries to tap near No, move it a bit
     btnArea.addEventListener("touchstart", (e) => {
@@ -395,7 +397,7 @@
         if(p.x > W+30) p.x = -30;
 
         // pastel confetti
-        const hue = ( (p.x/W)*120 + 330 ) % 360; // pink/purple range
+        const hue = ( (p.x/W)*120 + 330 ) % 360;
         ctx.fillStyle = `hsl(${hue} 90% 75%)`;
         ctx.beginPath();
         ctx.ellipse(p.x, p.y, p.r, p.r*1.4, p.a, 0, Math.PI*2);
