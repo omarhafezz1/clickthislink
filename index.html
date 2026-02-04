@@ -107,14 +107,11 @@
       letter-spacing:-0.5px;
     }
 
+    /* Make the button arena a bit wider/taller so "No" has room to run */
     .btnRow{
-      display:flex;
-      gap:14px;
-      justify-content:center;
-      align-items:center;
-      margin-top:10px;
       position:relative;
-      height:56px; /* room for moving No button */
+      height:68px;
+      margin-top:12px;
     }
 
     button{
@@ -123,8 +120,9 @@
       border-radius:999px;
       font-size:16px;
       cursor:pointer;
-      transition: transform .12s ease, opacity .12s ease, filter .12s ease;
+      transition: transform .12s ease, filter .12s ease;
       user-select:none;
+      -webkit-tap-highlight-color: transparent;
     }
     button:active{ transform: scale(.97); }
 
@@ -134,18 +132,29 @@
       box-shadow: 0 12px 24px rgba(255,77,136,.30);
       font-weight:700;
       min-width:92px;
+      position:absolute;
+      left:50%;
+      transform:translateX(-120%);
+      top:50%;
+      margin-top:-18px;
     }
 
-    /* SMALLER NO BUTTON */
+    /* SMALL, FIXED-SIZE NO BUTTON */
     #noBtn{
       background:#eaeaea;
       color:#111;
-      min-width:70px;
-      padding:8px 14px;
+      width:64px;          /* fixed width (won't "get bigger") */
+      height:34px;         /* fixed height */
+      padding:0;           /* no padding so size stays fixed */
       font-size:14px;
+      font-weight:600;
       position:absolute;
-      right:0;
+      top:50%;
+      margin-top:-17px;
+      left:50%;
+      transform:translateX(20%); /* initial start position */
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
+      transition: left .08s linear; /* quick horizontal movement */
     }
 
     .sub{
@@ -209,7 +218,6 @@
       transform: translateX(-50%) translateY(-6px);
     }
 
-    /* confetti canvas */
     canvas#confetti{
       position:fixed;
       inset:0;
@@ -222,6 +230,7 @@
 
   <div class="wrap">
     <div class="card">
+
       <!-- QUESTION SCREEN -->
       <div id="qScreen" class="screen active">
         <div class="kitty">
@@ -266,8 +275,8 @@
 
   <script>
     // ====== CUSTOMIZE THESE 2 LINES ======
-    const herName = "Farida";       // change name
-    const yesImage = "yay.jpg";     // upload this file to your repo OR use an image URL
+    const herName = "Farida";
+    const yesImage = "yay.jpg"; // upload this file to your repo OR use an image URL
     // =====================================
 
     const qScreen = document.getElementById("qScreen");
@@ -301,62 +310,92 @@
       startConfetti();
     }
 
-    // ----- NO button behavior: show message, then return to question -----
-    noBtn.addEventListener("click", () => {
-      showToast("Sorry, wrong answer. Try again. 😡");
-      hopNoBtn(); // keep it playful
-      setTimeout(() => {
-        goQuestion();
-      }, 900);
-    });
+    // ========= HARD-TO-CLICK HORIZONTAL RUNNER =========
+    let lastMove = 0;
+    let noX = 0; // left position in px inside btnArea
 
-    // ----- Move NO button to a random place inside its area -----
-    function hopNoBtn(){
+    function resetNoBtn(){
+      const area = btnArea.getBoundingClientRect();
+      const btn = noBtn.getBoundingClientRect();
+      noX = Math.max(8, Math.min(area.width - btn.width - 8, Math.round(area.width * 0.62)));
+      noBtn.style.left = noX + "px";
+    }
+
+    // Move only horizontally; direction depends on where cursor/finger is
+    function moveNoAwayFrom(clientX){
+      const now = performance.now();
+      if (now - lastMove < 60) return; // throttle so it doesn't jitter too fast
+      lastMove = now;
+
       const area = btnArea.getBoundingClientRect();
       const btn = noBtn.getBoundingClientRect();
 
-      const padding = 6;
-      const maxX = area.width - btn.width - padding;
-      const maxY = area.height - btn.height - padding;
+      const btnCenterX = btn.left + btn.width/2;
+      const areaLeft = area.left;
 
-      const x = Math.max(padding, Math.random() * maxX);
-      const y = Math.max(padding, Math.random() * maxY);
+      // if pointer is on left of the button, run right; else run left
+      const dir = clientX < btnCenterX ? 1 : -1;
 
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
+      // how far it jumps (bigger = harder)
+      const jump = 90 + Math.random()*70; // 90–160px
+
+      let nextX = noX + dir * jump;
+
+      const minX = 8;
+      const maxX = area.width - btn.width - 8;
+
+      // bounce off edges
+      if (nextX < minX) nextX = maxX;
+      if (nextX > maxX) nextX = minX;
+
+      noX = nextX;
+      noBtn.style.left = noX + "px";
     }
 
-    function resetNoBtn(){
-      noBtn.style.left = "";
-      noBtn.style.top = "";
-      noBtn.style.right = "0";
-    }
+    // Desktop: if cursor comes near, it runs (hard to click)
+    btnArea.addEventListener("mousemove", (e) => {
+      const btn = noBtn.getBoundingClientRect();
+      const dx = Math.abs(e.clientX - (btn.left + btn.width/2));
+      const dy = Math.abs(e.clientY - (btn.top + btn.height/2));
 
-    // ----- KEEP MOVING WHILE HOVERING (DESKTOP) -----
-    let hoverTimer = null;
-
-    noBtn.addEventListener("mouseenter", () => {
-      hopNoBtn(); // move immediately
-      hoverTimer = setInterval(hopNoBtn, 180); // keep moving
+      // "danger zone" around the No button
+      if (dx < 90 && dy < 45) {
+        moveNoAwayFrom(e.clientX);
+      }
     });
 
-    noBtn.addEventListener("mouseleave", () => {
-      clearInterval(hoverTimer);
-      hoverTimer = null;
-    });
-
-    // Mobile-friendly: if user tries to tap near No, move it a bit
+    // Mobile: if user touches anywhere near it, it runs BEFORE click lands
     btnArea.addEventListener("touchstart", (e) => {
       const t = e.touches[0];
       const btn = noBtn.getBoundingClientRect();
       const dx = Math.abs(t.clientX - (btn.left + btn.width/2));
       const dy = Math.abs(t.clientY - (btn.top + btn.height/2));
-      if (dx < 90 && dy < 60) hopNoBtn();
-    }, {passive:true});
 
-    // ----- YES button -----
+      if (dx < 110 && dy < 70) {
+        moveNoAwayFrom(t.clientX);
+        // prevent accidental click landing
+        e.preventDefault();
+      }
+    }, {passive:false});
+
+    // If she somehow clicks No anyway:
+    noBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      showToast("Sorry, wrong answer. Try again. 😡");
+      // send it running again for fun
+      const btn = noBtn.getBoundingClientRect();
+      moveNoAwayFrom(btn.left + btn.width/2);
+      setTimeout(goQuestion, 900);
+    });
+
+    // YES button
     yesBtn.addEventListener("click", goYes);
     backBtn.addEventListener("click", goQuestion);
+
+    // Place No button initially
+    window.addEventListener("load", resetNoBtn);
+    window.addEventListener("resize", resetNoBtn);
+    resetNoBtn();
 
     // ================== CONFETTI (simple canvas) ==================
     const canvas = document.getElementById("confetti");
@@ -391,12 +430,10 @@
         p.y += p.vy;
         p.a += p.va;
 
-        // wrap
         if(p.y > H+30) { p.y = -20; p.x = Math.random()*W; }
         if(p.x < -30) p.x = W+30;
         if(p.x > W+30) p.x = -30;
 
-        // pastel confetti
         const hue = ( (p.x/W)*120 + 330 ) % 360;
         ctx.fillStyle = `hsl(${hue} 90% 75%)`;
         ctx.beginPath();
