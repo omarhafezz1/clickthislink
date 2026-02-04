@@ -107,9 +107,9 @@
       transition: opacity .25s ease;
     }
 
-    /* Punch hit: bounce, then vanish */
+    /* Punch hit: bounce and fly a bit, then vanish */
     #noBtn.hit{
-      animation: btnHit .34s cubic-bezier(.2,.95,.2,1) forwards;
+      animation: btnHit .36s cubic-bezier(.2,.95,.2,1) forwards;
     }
     #noBtn.gone{
       opacity:0;
@@ -117,9 +117,9 @@
     }
     @keyframes btnHit{
       0%   { transform: translate(20%, -50%) rotate(0deg) scale(1); }
-      45%  { transform: translate(42%, -62%) rotate(8deg) scale(1.06); }
-      80%  { transform: translate(30%, -52%) rotate(4deg) scale(.98); }
-      100% { transform: translate(76%, -60%) rotate(10deg) scale(.92); }
+      40%  { transform: translate(46%, -54%) rotate(6deg) scale(1.06); }
+      75%  { transform: translate(34%, -50%) rotate(3deg) scale(.98); }
+      100% { transform: translate(92%, -52%) rotate(9deg) scale(.92); }
     }
 
     .sub{ margin-top:12px; font-size:12px; opacity:.75; }
@@ -170,37 +170,25 @@
     canvas#confetti{ position:fixed; inset:0; pointer-events:none; }
 
     /* ===========================
-       Character (SVG) + punch
+       CHARACTER (SVG) — true contact
        =========================== */
     .actorStage{
       position:absolute;
-      left:-260px;
-      bottom:-10px;
+      left:-280px; /* start off-screen */
+      bottom:-12px;
       width:280px;
       height:190px;
       pointer-events:none;
       z-index:6;
 
       /* small */
-      transform: scale(.65) translateX(0px);
+      transform: scale(.62);
       transform-origin: left bottom;
       filter: drop-shadow(0 16px 18px rgba(0,0,0,.12));
-
-      /* set by JS */
-      --travelX: 420px;
+      opacity:1;
     }
 
-    /* movement path to NO */
-    .actorStage.runIn{
-      animation: stagePath 1.15s cubic-bezier(.2,.92,.2,1) forwards;
-    }
-    @keyframes stagePath{
-      0%   { transform: scale(.65) translateX(0px); }
-      65%  { transform: scale(.65) translateX(var(--travelX)); }
-      100% { transform: scale(.65) translateX(var(--travelX)); }
-    }
-
-    /* whole body group */
+    /* run bob while travelling */
     #chibiG{
       transform-origin: 80px 135px;
       will-change: transform;
@@ -212,64 +200,56 @@
       100%{ transform: translateY(0) rotate(0deg); }
     }
 
-    /* punch: body lean */
+    /* punch body */
     .punch #chibiG{ animation: bodyPunch .46s cubic-bezier(.2,.95,.2,1) forwards; }
     @keyframes bodyPunch{
       0%   { transform: translateX(0) rotate(0deg); }
-      35%  { transform: translateX(5px) rotate(-5deg); }
-      70%  { transform: translateX(12px) rotate(6deg); }
-      100% { transform: translateX(6px) rotate(0deg); }
+      35%  { transform: translateX(4px) rotate(-4deg); }
+      70%  { transform: translateX(10px) rotate(5deg); }
+      100% { transform: translateX(5px) rotate(0deg); }
     }
 
-    /* arm physics (right arm) */
+    /* arm pivots (SVG-correct) */
     #armR, #forearmR{
       transform-box: fill-box;
-      transform-origin: 8px 8px; /* shoulder / elbow pivots */
+      transform-origin: 6px 8px; /* shoulder / elbow */
     }
-    #forearmR{ transform-origin: 6px 8px; }
+    #forearmR{ transform-origin: 6px 7px; }
 
     .punch #armR{ animation: upperArm .46s cubic-bezier(.2,.95,.2,1) forwards; }
     .punch #forearmR{ animation: foreArm .46s cubic-bezier(.2,.95,.2,1) forwards; }
 
+    /* LOWER + more realistic: drive from chest height */
     @keyframes upperArm{
-      0%   { transform: rotate(-24deg); }
-      45%  { transform: rotate(-8deg); }
-      70%  { transform: rotate(10deg); } /* drive forward */
-      100% { transform: rotate(-14deg); } /* recoil */
+      0%   { transform: rotate(-18deg); }
+      45%  { transform: rotate(-2deg); }
+      70%  { transform: rotate(12deg); } /* forward */
+      100% { transform: rotate(-10deg); } /* recoil */
     }
     @keyframes foreArm{
-      0%   { transform: rotate(26deg); }  /* bent */
-      45%  { transform: rotate(10deg); }
-      70%  { transform: rotate(-18deg); } /* extend at contact */
-      100% { transform: rotate(10deg); }
+      0%   { transform: rotate(34deg); }  /* bent */
+      45%  { transform: rotate(12deg); }
+      70%  { transform: rotate(-16deg); } /* extend */
+      100% { transform: rotate(12deg); }
     }
 
-    /* small impact flash near fist */
-    #impact{
-      opacity:0;
-      transform-origin: 0 0;
-    }
-    .impactOn #impact{
-      animation: impactPop .18s ease-out forwards;
-    }
+    /* impact flash near fist */
+    #impact{ opacity:0; }
+    .impactOn #impact{ animation: impactPop .18s ease-out forwards; }
     @keyframes impactPop{
       0%{ opacity:0; transform: scale(.6); }
       100%{ opacity:1; transform: scale(1.05); }
     }
 
     /* heart fx */
-    #fxGroup{
-      opacity:0;
-      transform-origin: 170px 40px;
-      transform: scale(.6) translateY(10px);
-    }
+    #fxGroup{ opacity:0; transform-origin: 170px 40px; transform: scale(.6) translateY(10px); }
     .showFx #fxGroup{ animation: fxPop .32s ease-out forwards; }
     @keyframes fxPop{
       0%{ opacity:0; transform: scale(.6) translateY(10px); }
       100%{ opacity:1; transform: scale(1) translateY(0); }
     }
 
-    /* look at camera */
+    /* look */
     .look #chibiG{ animation: lookCam .28s ease-in-out forwards; }
     @keyframes lookCam{
       from{ transform: rotate(0deg) translateX(0); }
@@ -287,11 +267,11 @@
   <canvas id="confetti"></canvas>
 
   <div class="wrap">
-    <div class="card">
+    <div class="card" id="card">
 
       <!-- Character -->
       <div class="actorStage" id="actorStage" aria-hidden="true">
-        <svg width="280" height="190" viewBox="0 0 240 170" xmlns="http://www.w3.org/2000/svg">
+        <svg id="chibiSvg" width="280" height="190" viewBox="0 0 240 170" xmlns="http://www.w3.org/2000/svg">
           <!-- Heart + sparkles -->
           <g id="fxGroup">
             <g transform="translate(178 40)">
@@ -304,8 +284,8 @@
             </g>
           </g>
 
-          <!-- Impact flash (near fist; positioned to the right) -->
-          <g id="impact" transform="translate(182 96)">
+          <!-- Impact flash (will be moved by JS to the fist contact) -->
+          <g id="impact" transform="translate(0 0)">
             <path d="M12 0 L16 10 L26 6 L20 16 L30 18 L20 22 L26 32 L16 28 L12 38 L8 28 L-2 32 L4 22 L-6 18 L4 16 L-2 6 L8 10 Z"
                   fill="rgba(255,255,255,.95)" />
           </g>
@@ -332,18 +312,18 @@
               <rect x="36" y="14" width="6" height="22" rx="6" fill="#fff" opacity=".9"/>
             </g>
 
-            <!-- left arm (static) -->
-            <g transform="translate(60 96) rotate(18)">
+            <!-- left arm -->
+            <g transform="translate(60 98) rotate(18)">
               <rect x="0" y="0" width="48" height="16" rx="12" fill="#ff6fa0" stroke="#1a1a1a" stroke-width="4"/>
               <circle cx="48" cy="8" r="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4"/>
             </g>
 
-            <!-- right arm (punching): upper arm + forearm + fist -->
-            <g id="armR" transform="translate(132 98) rotate(-24)">
+            <!-- right arm (LOWER so punch comes from the body, not above) -->
+            <g id="armR" transform="translate(132 110) rotate(-18)">
               <rect x="0" y="0" width="34" height="16" rx="12" fill="#ff6fa0" stroke="#1a1a1a" stroke-width="4"/>
-              <g id="forearmR" transform="translate(26 0) rotate(26)">
+              <g id="forearmR" transform="translate(26 0) rotate(34)">
                 <rect x="0" y="0" width="28" height="14" rx="12" fill="#ff6fa0" stroke="#1a1a1a" stroke-width="4"/>
-                <circle cx="30" cy="7" r="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4"/>
+                <circle id="fist" cx="30" cy="7" r="10" fill="#ffd9c2" stroke="#1a1a1a" stroke-width="4"/>
               </g>
             </g>
 
@@ -419,14 +399,17 @@
     const yesImage = "yay.jpg";
     // =======================
 
+    const card = document.getElementById("card");
     const qScreen = document.getElementById("qScreen");
     const yesScreen = document.getElementById("yesScreen");
     const yesBtn = document.getElementById("yesBtn");
     const noBtn = document.getElementById("noBtn");
-    const btnArea = document.getElementById("btnArea");
     const toast = document.getElementById("toast");
     const backBtn = document.getElementById("backBtn");
+
     const actorStage = document.getElementById("actorStage");
+    const chibiSvg = document.getElementById("chibiSvg");
+    const fist = document.getElementById("fist");
     const impact = document.getElementById("impact");
 
     document.getElementById("nameSpan").textContent = herName;
@@ -451,7 +434,7 @@
       startConfetti();
     }
 
-    // If she clicks NO before punch
+    // If she clicks NO before punch happens
     noBtn.addEventListener("click", (e) => {
       e.preventDefault();
       showToast("Sorry, wrong answer. Try again. 😡");
@@ -461,51 +444,108 @@
     yesBtn.addEventListener("click", goYes);
     backBtn.addEventListener("click", goQuestion);
 
-    // Put character close enough so fist reaches NO
-    function positionActorToNo(){
+    // --- CORE FIX: align fist with NO button center ---
+    function placeActorSoFistHitsNo(){
+      const cardRect = card.getBoundingClientRect();
       const noRect = noBtn.getBoundingClientRect();
-      const areaRect = btnArea.getBoundingClientRect();
 
-      const noCenterX = (noRect.left + noRect.width/2) - areaRect.left;
+      // NO center in card coordinates
+      const targetX = (noRect.left + noRect.width/2) - cardRect.left;
+      const targetY = (noRect.top + noRect.height/2) - cardRect.top;
 
-      // Travel so the character’s fist (near right edge of SVG) is near NO center
-      // Tune offsets for realism
-      const travel = Math.max(280, Math.min(560, noCenterX + 250));
-      actorStage.style.setProperty("--travelX", travel + "px");
+      // Where is fist currently on screen?
+      const fistRect = fist.getBoundingClientRect();
+      const fistCenterX = (fistRect.left + fistRect.width/2) - cardRect.left;
+      const fistCenterY = (fistRect.top + fistRect.height/2) - cardRect.top;
+
+      // We need actorStage to move by this delta so fist lines up with NO
+      const dx = targetX - fistCenterX;
+      const dy = targetY - fistCenterY;
+
+      // Keep vertical mostly stable; apply small dy so punch height matches button
+      // (dy is usually negative/positive depending on device)
+      actorStage._targetLeft = dx;
+      actorStage._targetUp = dy;
     }
 
-    window.addEventListener("load", () => {
-      positionActorToNo();
+    // Move impact flash exactly to the button center at contact moment
+    function moveImpactToNo(){
+      const noRect = noBtn.getBoundingClientRect();
+      const svgRect = chibiSvg.getBoundingClientRect();
 
-      actorStage.classList.add("runIn");
+      const noCenterX = (noRect.left + noRect.width/2) - svgRect.left;
+      const noCenterY = (noRect.top + noRect.height/2) - svgRect.top;
+
+      // impact shape is about 30x38, so center it
+      impact.setAttribute("transform", `translate(${noCenterX-12} ${noCenterY-18})`);
+    }
+
+    async function runIntro(){
+      // Ensure layout is ready
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+      // First, set starting position off left
+      actorStage.style.left = "-280px";
+      actorStage.style.bottom = "-12px";
+
+      // Add run bob
       actorStage.classList.add("run");
 
-      // Punch right after arrival
+      // Compute target delta to line fist with NO
+      placeActorSoFistHitsNo();
+
+      // Current left in px
+      const startLeft = -280;
+      // We want to add dx to current position:
+      // Start is offscreen; add a base so he actually comes INTO the card
+      // This base bring-in is ~340px, then fine dx aligns fist.
+      const baseBringIn = 340;
+      const targetLeft = startLeft + baseBringIn + (actorStage._targetLeft || 0);
+
+      // Small vertical correction if needed (usually tiny)
+      const bottomBase = -12;
+      const targetBottom = bottomBase + Math.max(-20, Math.min(20, (actorStage._targetUp || 0)));
+
+      // Animate to target
+      actorStage.animate(
+        [{ left: `${startLeft}px`, bottom: `${bottomBase}px` },
+         { left: `${targetLeft}px`, bottom: `${targetBottom}px` }],
+        { duration: 1100, easing: "cubic-bezier(.2,.92,.2,1)", fill: "forwards" }
+      );
+
+      // After arrive: punch
       setTimeout(() => {
         actorStage.classList.remove("run");
         actorStage.classList.add("punch");
 
-        // CONTACT moment: when forearm is most extended (~70% of 460ms ≈ 320ms)
+        // At contact moment: align impact + hit button
         setTimeout(() => {
+          moveImpactToNo();
           actorStage.classList.add("impactOn");
           noBtn.classList.add("hit");
         }, 320);
 
-        // remove impact flash quickly + vanish button
         setTimeout(() => actorStage.classList.remove("impactOn"), 520);
-        setTimeout(() => noBtn.classList.add("gone"), 620);
+        setTimeout(() => noBtn.classList.add("gone"), 640);
 
-      }, 980);
+      }, 1100);
 
       // Look + heart
       setTimeout(() => {
         actorStage.classList.remove("punch");
         actorStage.classList.add("look");
         actorStage.classList.add("showFx");
-      }, 1650);
+      }, 1750);
 
       // Fade out
-      setTimeout(() => actorStage.classList.add("fadeOut"), 2750);
+      setTimeout(() => actorStage.classList.add("fadeOut"), 2900);
+    }
+
+    window.addEventListener("load", runIntro);
+    window.addEventListener("resize", () => {
+      // Re-run alignment on resize if needed
+      // (doesn't replay animation unless you refresh)
+      placeActorSoFistHitsNo();
     });
 
     // ================== CONFETTI (simple canvas) ==================
